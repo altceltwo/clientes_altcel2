@@ -218,7 +218,7 @@ class ApiController extends Controller
 
         $comment = $request->post('comment');
         $reason = $request->post('reason');
-        $status = $request->post('status');
+        $statusC = $request->post('status');
 
         // Datos para guardar pago de mensualidad en caso de que haya alguno
         $service = $request['service'];
@@ -262,7 +262,7 @@ class ApiController extends Controller
                 'amount' => $amount,
                 'comment' => $comment,
                 'reason' => $reason,
-                'status' => $status
+                'status' => $statusC
             ]);
             // $response = response()->json($response);
             // return $response;
