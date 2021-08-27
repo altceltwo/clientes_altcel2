@@ -195,6 +195,7 @@
         let offer_id = $('#ratesPurchaseProduct option:selected').attr('data-offer-id');
         let tokenCSRF = $('meta[name="csrf-token"]').attr('content');
         let tokenJWT = token;
+        let comment = '', reason = 'cobro', status = 'pendiente';
         let user_id = $('#user_id').val();
     
         var validated = $('#w6 form').valid();
@@ -212,7 +213,7 @@
                         $.ajax({
                             url: "{{route('purchase')}}",
                             method: "POST",
-                            data: {token:tokenJWT, _token:tokenCSRF, msisdn:msisdn, offerID:offerID, rate_id:rate_id, offer_id:offer_id, user_id:user_id, price:price},
+                            data: {token:tokenJWT, _token:tokenCSRF, msisdn:msisdn, offerID:offerID, rate_id:rate_id, offer_id:offer_id, user_id:user_id, price:price, comment:comment, reason:reason, status:status},
                             success: function(response){
                                 response = JSON.parse(response);
                                 if(response.http_code == 1){

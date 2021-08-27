@@ -233,6 +233,8 @@ $w5finish.on('click', function( ev ) {
     let extraAmount = $('#extraAmount').val();
     let service = $('#service').val();
 
+    let comment = '', reason = 'cobro', status = 'pendiente';
+
     if(scheduleDateFirst.length == 0 || /^\s+$/.test(scheduleDateFirst)){
         scheduleDate = '';
     }
@@ -272,6 +274,9 @@ $w5finish.on('click', function( ev ) {
             folioPay: 'N/A',
             estadoPay: 'completado',
             montoExtra: extraAmount,
+            comment:comment,
+            reason:reason,
+            status:status
         }
         route = "{{route('changeProduct.post')}}";
 

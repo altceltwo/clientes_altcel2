@@ -157,6 +157,9 @@ class ApiController extends Controller
         $price = $request->post('price');
         $offer_id = $request->post('offer_id');
         $rate_id = $request->post('rate_id');
+        $comment = $request->post('comment');
+        $reason = $request->post('reason');
+        $status = $request->post('status');
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json'
@@ -166,7 +169,10 @@ class ApiController extends Controller
             'offer_id' => $offer_id,
             'rate_id' => $rate_id,
             'price' => $price,
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'comment' => $comment,
+            'reason' => $reason,
+            'status' => $status
         ]);
 
         return $response;
@@ -210,6 +216,10 @@ class ApiController extends Controller
         $user_id = $request->post('user_id');
         $amount = $request->post('amount');
 
+        $comment = $request->post('comment');
+        $reason = $request->post('reason');
+        $status = $request->post('status');
+
         // Datos para guardar pago de mensualidad en caso de que haya alguno
         $service = $request['service'];
         $payID = $request['payID'];
@@ -249,7 +259,10 @@ class ApiController extends Controller
                 'scheduleDate' => $scheduleDate,
                 'type' => $type,
                 'user_id' => $user_id,
-                'amount' => $amount
+                'amount' => $amount,
+                'comment' => $comment,
+                'reason' => $reason,
+                'status' => $status
             ]);
             // $response = response()->json($response);
             // return $response;
