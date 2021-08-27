@@ -60,12 +60,25 @@ class ClientController extends Controller
         return view('clients.myCharges',$data);
     }
 
+    public function myChanges() {
+        $user_id = auth()->user()->id;
+        $data['changes'] = DB::table('changes')
+                              ->join('numbers','numbers.id','=','changes.number_id')
+                              ->join('rates','rates.id','=','changes.rate_id')
+                              ->join('offers','offers.id','=','changes.offer_id')
+                              ->where('changes.who_did_id',$user_id)
+                              ->select('numbers.MSISDN AS number','numbers.producto AS product','rates.name AS rate_name','offers.name AS offer_name','changes.date AS date_purchase','changes.amount AS amount')
+                              ->get();
+        return view('clients.myChanges',$data);
+    }
+
     public function monthlyPayments($msisdn){
         $dataNumber = Number::where('MSISDN',$msisdn)->first();
         $number_id = $dataNumber->id;
         $dataActivation = Activation::where('numbers_id',$number_id)->first();
         $activation_id = $dataActivation->id;
         
+        $data['MSISDN'] = $msisdn;
         $data['paymentsPendings'] = DB::table('pays')
                                       ->join('activations','activations.id','=','pays.activation_id')
                                       ->join('rates','rates.id','=','activations.rate_id')

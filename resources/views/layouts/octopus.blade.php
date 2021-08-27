@@ -407,6 +407,9 @@
                                             <li>
                                                 <a href="{{route('my-charges')}}">Mensuales</a>
                                             </li>
+                                            <li>
+                                                <a href="{{route('my-changes')}}">Cambios Producto</a>
+                                            </li>
                                         </ul>
                                     </li>
                                     

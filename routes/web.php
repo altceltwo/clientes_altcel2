@@ -43,6 +43,7 @@ Route::get('/consultUF/{msisdn}','ClientController@getInfoUF')->name('consultUF.
 Route::get('/recharge','ClientController@recharge')->name('recharge')->middleware('auth');
 Route::get('/my-recharges','ClientController@myRecharges')->name('my-recharges')->middleware('auth');
 Route::get('/my-charges','ClientController@myCharges')->name('my-charges')->middleware('auth');
+Route::get('/my-changes','ClientController@myChanges')->name('my-changes')->middleware('auth');
 Route::get('/monthly-payments/{msisdn}','ClientController@monthlyPayments')->name('monthlyPayments')->middleware('auth');
 Route::get('/unbarring','ClientController@unbarring')->name('unbarring.get')->middleware('auth');
 Route::get('/change-product/{msisdn}','ClientController@changeProduct')->name('changeProduct')->middleware('auth');

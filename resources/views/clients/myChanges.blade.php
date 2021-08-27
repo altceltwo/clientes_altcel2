@@ -2,7 +2,7 @@
 @extends('layouts.datatablescss')
 @section('content')
 <header class="page-header">
-    <h2>Recargas</h2>
+    <h2>Cambios de Producto</h2>
     <div class="right-wrapper pull-right">
         <ol class="breadcrumbs">
             <li>
@@ -39,20 +39,20 @@
                     <th scope="col">Número</th>
                     <th scope="col">Producto</th>
                     <th scope="col">Recarga</th>
-                    <th scope="col">Plan Activo</th>
+                    <th scope="col">Plan</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Monto</th>
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($recharges as $recharge)
+                @foreach($changes as $change)
                     <tr style="cursor: pointer;" >
-                        <td>{{$recharge->number}}</td>
-                        <td>{{$recharge->product}}</td>
-                        <td>{{$recharge->offer_name}}</td>
-                        <td>{{$recharge->rate_name}}</td>
-                        <td>{{$recharge->date_purchase}}</td>
-                        <td>${{number_format($recharge->amount,2)}}</td>
+                        <td>{{$change->number}}</td>
+                        <td>{{$change->product}}</td>
+                        <td>{{$change->offer_name}}</td>
+                        <td>{{$change->rate_name}}</td>
+                        <td>{{$change->date_purchase}}</td>
+                        <td>${{number_format($change->amount,2)}}</td>
                     </tr>
                 @endforeach
                 </tbody>

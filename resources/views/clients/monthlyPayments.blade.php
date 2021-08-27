@@ -18,6 +18,9 @@ use \Carbon\Carbon;
     </div>
 </header>
 
+<div class="col-md-12 mb-md">
+    <a href="{{url('/change-product/'.$MSISDN)}}" class="btn btn-warning mt-md" id="changeProduct">Cambio de Producto</a>
+</div>
 
 <section class="panel">
     <header class="panel-heading">
