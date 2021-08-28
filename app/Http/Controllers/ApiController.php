@@ -248,6 +248,11 @@ class ApiController extends Controller
         }
 
         if($bool == 1){
+
+            $reason = $payID != 0 ? 'mensualidad' : $reason;
+            $statusC = $payID != 0 ? 'completado' : $statusC;
+            $payment_id = $payID != 0 ? $payID : null;
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
             ])->post('http://crm.altcel/change-product',[
@@ -262,7 +267,8 @@ class ApiController extends Controller
                 'amount' => $amount,
                 'comment' => $comment,
                 'reason' => $reason,
-                'status' => $statusC
+                'status' => $statusC,
+                'pay_id' => $payment_id
             ]);
             // $response = response()->json($response);
             // return $response;
