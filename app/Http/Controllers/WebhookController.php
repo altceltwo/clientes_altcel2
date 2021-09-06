@@ -306,8 +306,8 @@ class WebhookController extends Controller
                 if($rate_idFromPayment == $rate_idFromActivation && $offer_idFromPayment == $offer_idFromActivation){
                     // Deberá verificar el estado del UF, en caso de no estar en baja temporar o barring, sacar de ese status y ponerlo activo
                 
-                    $status = WebhookController::consultUFRuntime($msisdn,$producto);
-                    if($status == 1){
+                    $statusAltan = WebhookController::consultUFRuntime($msisdn,$producto);
+                    if($statusAltan == 1){
                         // return response()->json(['message'=>'Todo ha salido good.','http_code'=>1]);
                     }else{
                         return response()->json(['message'=>'Hubo un error, no se hará cambio alguno.','http_code'=>0]);
@@ -350,8 +350,8 @@ class WebhookController extends Controller
                             ]);
                             return $response;
                         }else{
-                            $status = WebhookController::consultUFRuntime($msisdn,$producto);
-                            if($status == 1){
+                            $statusAltan = WebhookController::consultUFRuntime($msisdn,$producto);
+                            if($statusAltan == 1){
                                 
                                 $type = 'internalExternalChange';
                                 $pay_id = $payment_data->id;
@@ -390,6 +390,7 @@ class WebhookController extends Controller
                 // Ya se obtienen datos al caer el pago
                 $offer_id = $x->offer_id;
                 $rate_id = $x->rate_id;
+                $amount = $x->amount;
                 $number_id = $x->number_id;
                 $dataNumber = Number::where('id',$number_id)->first();
                 $dataOffer = Offer::where('id',$offer_id)->first();
@@ -415,8 +416,8 @@ class WebhookController extends Controller
                     $address = null;
                 }
 
-                $status = WebhookController::consultUFRuntime($msisdn,$producto);
-                if($status == 1){
+                $statusAltan = WebhookController::consultUFRuntime($msisdn,$producto);
+                if($statusAltan == 1){
                     
                     $type = 'internalExternalChange';
 
@@ -425,8 +426,8 @@ class WebhookController extends Controller
                     ])->post('http://crm.altcel/change-product',[
                         'msisdn' => $msisdn,
                         'offerID' => $offerID,
-                        'offer_id' => $offer_idFromPayment,
-                        'rate_id' => $rate_idFromPayment,
+                        'offer_id' => $offer_id,
+                        'rate_id' => $rate_id,
                         'scheduleDate' => $scheduleDate,
                         'address' => $address,
                         'type' => $type,
@@ -434,9 +435,10 @@ class WebhookController extends Controller
                         'reason' => 'referenciado',
                         'status' => 'completado',
                         'pay_id' => null,
-                        'reference_id' => $reference_id
+                        'reference_id' => $reference_id,
+                        'amount' => $amount
                     ]);
-                    return $response;
+                    // return $response;
                 }else{
                     return response()->json(['message'=>'Hubo un error, no se hará cambio alguno','http_code'=>0]);
                 }
