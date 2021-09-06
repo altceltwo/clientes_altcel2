@@ -289,6 +289,18 @@ class WebhookController extends Controller
                 $dataActivation = Activation::where('numbers_id',$number_id)->first();
                 $rate_idFromActivation = $dataActivation->rate_id;
                 $offer_idFromActivation = $dataActivation->offer_id;
+
+                $rate_id = $x->rate_id;
+                $rate_data = Rate::where('id',$rate_id)->first();
+                $rate_price = $rate_data->price;
+
+                $payment_data = Pay::where('reference_id',$reference_id)->first();
+                $payment_amountReceived = $payment_data->amount_received;
+                $payment_amountReceived = $payment_amountReceived == null ? 0 : $payment_amountReceived;
+                $payment_type = $payment_data->type_pay;
+                $payment_type = $payment_type == null ? 'referencia' : $payment_type.'/referencia';
+                
+                $monto_recibido = $payment_amountReceived+$amount_reference;
                 
                 // Verificación del plan y oferta solicitados en la referencia de pago
                 if($rate_idFromPayment == $rate_idFromActivation && $offer_idFromPayment == $offer_idFromActivation){
@@ -317,6 +329,7 @@ class WebhookController extends Controller
 
                         if($offer_idFromPayment == $offer_idFromActivation){
                             $type = 'internalChange';
+                            $pay_id = $payment_data->id;
 
                             $response = Http::withHeaders([
                                 'Content-Type' => 'application/json'
@@ -327,7 +340,13 @@ class WebhookController extends Controller
                                 'rate_id' => $rate_idFromPayment,
                                 'scheduleDate' => $scheduleDate,
                                 'address' => $address,
-                                'type' => $type
+                                'type' => $type,
+                                'comment' => null,
+                                'reason' => 'mensualidad',
+                                'status' => 'completado',
+                                'pay_id' => $pay_id,
+                                'reference_id' => null
+
                             ]);
                             return $response;
                         }else{
@@ -335,6 +354,7 @@ class WebhookController extends Controller
                             if($status == 1){
                                 
                                 $type = 'internalExternalChange';
+                                $pay_id = $payment_data->id;
 
                                 $response = Http::withHeaders([
                                     'Content-Type' => 'application/json'
@@ -345,7 +365,12 @@ class WebhookController extends Controller
                                     'rate_id' => $rate_idFromPayment,
                                     'scheduleDate' => $scheduleDate,
                                     'address' => $address,
-                                    'type' => $type
+                                    'type' => $type,
+                                    'comment' => null,
+                                    'reason' => 'mensualidad',
+                                    'status' => 'completado',
+                                    'pay_id' => $pay_id,
+                                    'reference_id' => null
                                 ]);
                                 return $response;
                             }else{
@@ -354,18 +379,6 @@ class WebhookController extends Controller
                         }
                     }
                 }
-
-                $rate_id = $x->rate_id;
-                $rate_data = Rate::where('id',$rate_id)->first();
-                $rate_price = $rate_data->price;
-
-                $payment_data = Pay::where('reference_id',$reference_id)->first();
-                $payment_amountReceived = $payment_data->amount_received;
-                $payment_amountReceived = $payment_amountReceived == null ? 0 : $payment_amountReceived;
-                $payment_type = $payment_data->type_pay;
-                $payment_type = $payment_type == null ? 'referencia' : $payment_type.'/referencia';
-                
-                $monto_recibido = $payment_amountReceived+$amount_reference;
 
                 Pay::where('reference_id',$reference_id)->update([
                     'status' => 'completado',
@@ -416,7 +429,12 @@ class WebhookController extends Controller
                         'rate_id' => $rate_idFromPayment,
                         'scheduleDate' => $scheduleDate,
                         'address' => $address,
-                        'type' => $type
+                        'type' => $type,
+                        'comment' => null,
+                        'reason' => 'referenciado',
+                        'status' => 'completado',
+                        'pay_id' => null,
+                        'reference_id' => $reference_id
                     ]);
                     return $response;
                 }else{

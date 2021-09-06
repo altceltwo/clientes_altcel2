@@ -268,7 +268,8 @@ class ApiController extends Controller
                 'comment' => $comment,
                 'reason' => $reason,
                 'status' => $statusC,
-                'pay_id' => $payment_id
+                'pay_id' => $payment_id,
+                'reference_id' => null
             ]);
             // $response = response()->json($response);
             // return $response;

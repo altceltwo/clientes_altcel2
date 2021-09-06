@@ -38,8 +38,8 @@
                     <tr>
                     <th scope="col">Número</th>
                     <th scope="col">Producto</th>
-                    <th scope="col">Plan</th>
                     <th scope="col">Nombre</th>
+                    <th scope="col">Plan</th>
                     <th scope="col">Correo</th>
                     </tr>
                 </thead>
@@ -48,8 +48,8 @@
                     <tr style="cursor: pointer;" onclick="redirectTo(this.id,this)" id="{{$client->number}}" data-name="{{$client->name.' '.$client->lastname}}">
                         <td>{{$client->number}}</td>
                         <td>{{$client->product}}</td>
-                        <td>{{$client->rate_name}}</td>
                         <td>{{$client->name.' '.$client->lastname}}</td>
+                        <td>{{$client->rate_name}}</td>
                         <td>{{$client->email}}</td>
                     </tr>
                 @endforeach

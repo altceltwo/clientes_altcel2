@@ -572,7 +572,7 @@ class ClientController extends Controller
 
         if($bool){
             $consultUF = app('App\Http\Controllers\AltanController')->consultUF($msisdn);
-            return $consultUF;
+            // return $consultUF;
             $responseSubscriber = $consultUF['responseSubscriber'];
             $information = $responseSubscriber['information'];
             $status = $responseSubscriber['status']['subStatus'];
