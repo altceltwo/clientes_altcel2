@@ -579,6 +579,15 @@ class ClientController extends Controller
             $freeUnits = $responseSubscriber['freeUnits'];
 
             $data = [];
+            $data['status'] = $status;
+            $data['imei'] = $information['IMEI'];
+            $data['icc'] = $information['ICCID'];
+
+            if($status == 'Active'){
+                $data['status_color'] = 'success';
+            }else if($status == 'Suspend (B2W)'){
+                $data['status_color'] = 'warning';
+            }
             $data['FreeUnitsBoolean'] = 0;
             $data['FreeUnits2Boolean'] = 0;
 
@@ -589,6 +598,11 @@ class ClientController extends Controller
                     $percentageFree = ($unusedAmt/$totalAmt)*100;
                     $data['FreeUnits'] = array('totalAmt'=>$totalAmt/1024,'unusedAmt'=>$unusedAmt/1024,'freePercentage'=>$percentageFree);
                     $data['FreeUnitsBoolean'] = 1;
+
+                    $detailOfferings = $freeUnits[$i]['detailOfferings'];
+
+                    $data['effectiveDatePrimary'] = ClientController::formatDateConsultUF($detailOfferings[0]['effectiveDate']);
+                    $data['expireDatePrimary'] = ClientController::formatDateConsultUF($detailOfferings[0]['expireDate']);
                 }
 
                 if($freeUnits[$i]['name'] == 'Free Units 2' || $freeUnits[$i]['name'] == 'FU_Altan-RN_P2'){
@@ -597,17 +611,35 @@ class ClientController extends Controller
                     $percentageFree = ($unusedAmt/$totalAmt)*100;
                     $data['FreeUnits2'] = array('totalAmt'=>$totalAmt/1024,'unusedAmt'=>$unusedAmt/1024,'freePercentage'=>$percentageFree);
                     $data['FreeUnits2Boolean'] = 1;
+
+                    $detailOfferings = $freeUnits[$i]['detailOfferings'];
+
+                    $data['effectiveDateSurplus'] = ClientController::formatDateConsultUF($detailOfferings[0]['effectiveDate']);
+                    $data['expireDateSurplus'] = ClientController::formatDateConsultUF($detailOfferings[0]['expireDate']);
                 }
             }
 
             if($data['FreeUnits2Boolean'] == 0){
                 $data['FreeUnits2'] = array('totalAmt'=>0,'unusedAmt'=>0,'freePercentage'=>0);
+                $data['effectiveDateSurplus'] = 'No se ha generado recarga.';
+                $data['expireDateSurplus'] = 'No se ha generado recarga.';
             }
 
             return view('clients.consumptions',$data);
         }else{
             return view('home');
         }
+    }
+
+    public function formatDateConsultUF($date){
+        $year = substr($date,0,4);
+        $month = substr($date,4,2);
+        $day = substr($date,6,2);
+        $hour = substr($date,8,2);
+        $minute = substr($date,10,2);
+        $second = substr($date,12,2);
+        $date = $day.'-'.$month.'-'.$year.' '.$hour.':'.$minute.':'.$second;
+        return $date;
     }
 
     public function myReferences(){

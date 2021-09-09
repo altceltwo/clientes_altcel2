@@ -125,7 +125,7 @@
                     },
                     success: function(data){
                         x=data;
-                        console.log(x)
+                        // console.log(x)
                         if(data.channel_id == 1){
                             $('#modalTitleRef').html('Referencia '+data.reference)
                             $('#reference-pdf').attr('src', link+data.reference);
@@ -135,9 +135,12 @@
                             $('#referenceOxxoCard').html(data.reference);
                             
                             $('#referenceOxxo').modal('show');
-                            console.log('referencia OxxoPay');
+                            // console.log('referencia OxxoPay');
+                        }else if(data.channel_id == 3){
+                            location.href = data.url_card_payment;
+                            // console.log(data.url_card_payment)
                         }
-                        console.log(data.reference);
+                        // console.log(data.reference);
                     }
                 }); 
     }

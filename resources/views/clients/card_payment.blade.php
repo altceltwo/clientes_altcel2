@@ -65,7 +65,7 @@
                         @if($datos['referencestype'] == 1)
                         <div class="form-group col-md-6">
                             <label for="lastname">Monto: </label>
-                            <input type="text" class="form-control form-control-sm" id="amount" placeholder="Monto" value="{{$datos['rate_price']}}" readonly>
+                            <input type="text" class="form-control form-control-sm" id="amount" placeholder="Monto" value="{{number_format($datos['rate_price'],2)}}" readonly>
                         </div>
                         <input type="hidden" id="offer_id" value="{{$datos['offer_id']}}">
                         <input type="hidden" id="rate_id" value="{{$datos['rate_id']}}">
@@ -73,7 +73,7 @@
                         @elseif($datos['referencestype'] == 2)
                         <div class="form-group col-md-6">
                             <label for="lastname">Monto: </label>
-                            <input type="text" class="form-control form-control-sm" id="amount" placeholder="Monto" value="{{$datos['pack_price']}}" readonly>
+                            <input type="text" class="form-control form-control-sm" id="amount" placeholder="Monto" value="{{number_format($datos['pack_price'],2)}}" readonly>
                         </div>
                         <input type="hidden" id="pack_id" value="{{$datos['pack_id']}}">
                         @endif

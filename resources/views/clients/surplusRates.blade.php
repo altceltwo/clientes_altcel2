@@ -92,7 +92,8 @@
                 <input type="hidden" id="offer_id" value="0">
 
                 <div class="col-md-12 mt-md">
-                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="accept">Aceptar <i class="fa fa-money"></i></button>
+                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="accept" data-type="referencia">Referencia <i class="fa fa-money"></i></button>
+                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="acceptCard" data-type="tarjeta">Tarjeta <i class="fa fa-money"></i></button>
                     <button type="button" class="mb-xs mt-xs mr-xs btn btn-danger" id="cancel">Cancelar <i class="fa fa-times-circle"></i></button>
                 </div>
                 
@@ -185,6 +186,7 @@
     })
 
 var token = '{{$token}}';
+var tokenCSRF = $('meta[name="csrf-token"]').attr('content');
 
 $('.btn-buy').click(function(){
     let price = $(this).attr('data-price');
@@ -201,7 +203,7 @@ $('#cancel').click(function(){
     $('#formPayment').addClass('d-none');
 });
 
-$('#accept').click(function(){
+$('#accept, #acceptCard').click(function(){
     let rate = $('#rate_id').val();
     let offer_id = $('#offer_id').val();
     let channel = $('#channel').val();
@@ -216,75 +218,113 @@ $('#accept').click(function(){
     let client_id = $('#client_id').val();
     let referencestype = $('#referencestype_id').val();
     let pay_id = '';
-    let data;
+    let data, url;
+    let paymentMethod = $(this).attr('data-type');
 
-    data = {
-        token:token, number_id: number_id, name: name, lastname: lastname, email: email,
-        cel_destiny_reference: cel_destiny_reference, amount: amount, offer_id: offer_id,
-        concepto: concepto, type: referencestype, channel: channel, rate_id: rate, user_id: user_id,
-        client_id: client_id, pay_id: pay_id, quantity: 1,from:'client'
-    };
-    if(channel == 0){
-        Swal.fire({
-            icon: 'error',
-            title: 'Método de pago no elegido.',
-            text: 'Por favor elige un método de pago.',
-            showConfirmButton: false,
-            timer: 2000
-        });
-        return false;
+    if(paymentMethod == 'referencia'){
+        
+        if(channel == 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Método de pago no elegido.',
+                text: 'Por favor elige un método de pago.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            return false;
+        }
+
+        data = {
+            token:token, number_id: number_id, name: name, lastname: lastname, email: email,
+            cel_destiny_reference: cel_destiny_reference, amount: amount, offer_id: offer_id,
+            concepto: concepto, type: referencestype, channel: channel, rate_id: rate, user_id: user_id,
+            client_id: client_id, pay_id: pay_id, quantity: 1,from:'client'
+        };
+        url = "{{url('/generateReferenceAPI')}}";
+
+        
+    }else if(paymentMethod == 'tarjeta'){
+        data = {
+            _token:tokenCSRF,
+            name:name,lastname: lastname,
+            email:email, cellphone:cel_destiny_reference,
+            amount:amount,concepto:concepto,
+            referencestype:referencestype,
+            offer_id: offer_id, rate_id:rate,
+            number_id:number_id, channel_id:3,
+            client_id:client_id, pay_id:pay_id
+        }
+        url = "{{url('/send-card-payment')}}";
     }
 
-    $.ajax({
-        url: "{{url('/generateReferenceAPI')}}",
-        method: "POST",
-        data: data,
-        success: function(response){
-            console.log(response);
-            if(response.status == 'Token is Expired'){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ooops!',
-                    text: 'El tiempo de espera se excedió.',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
-                setTimeout(function(){ location.reload(); }, 3000);
-                return false;
-            }else if(response.status == 'Token is Invalid'){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ooops!',
-                    text: 'Al parecer ya has solicitado una recarga, por razones de seguridad se refrescará la pantalla para que puedas solicitar otra recarga.',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
-                setTimeout(function(){ location.reload(); }, 3000);
-                return false;
-            }else if(response.status == 'Authorization Token not found'){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ooops!',
-                    text: 'Al parecer no tienes permiso para realizar esta acción, se refrescará la pantalla.',
-                    showConfirmButton: false,
-                    timer: 2500
-                });
-                setTimeout(function(){ location.reload(); }, 3000);
-                return false;
-            }else{
-                token = token+'xxXXxx';
-                if(channel == 1){
-                // referenceWhatsapp = response.reference;
-                pdfPaynet(response.reference,cel_destiny_reference,name,lastname);
-                }else if(channel == 2){
-                    // referenceWhatsapp = response.charges.data[0].payment_method.reference;
-                    showOxxoPay(response.amount,response.charges.data[0].payment_method.reference);
-                }
-            }
+    console.log(data);
+    // return false;
 
-            
-        }
-    });
+    if(paymentMethod == 'referencia'){
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: data,
+            success: function(response){
+                console.log(response);
+                if(response.status == 'Token is Expired'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops!',
+                        text: 'El tiempo de espera se excedió.',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                    setTimeout(function(){ location.reload(); }, 3000);
+                    return false;
+                }else if(response.status == 'Token is Invalid'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops!',
+                        text: 'Al parecer ya has solicitado una recarga, por razones de seguridad se refrescará la pantalla para que puedas solicitar otra recarga.',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                    setTimeout(function(){ location.reload(); }, 3000);
+                    return false;
+                }else if(response.status == 'Authorization Token not found'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops!',
+                        text: 'Al parecer no tienes permiso para realizar esta acción, se refrescará la pantalla.',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                    setTimeout(function(){ location.reload(); }, 3000);
+                    return false;
+                }else{
+                    response = JSON.parse(response);
+                    // console.log(response);
+                    token = token+'xxXXxx';
+                    if(channel == 1){
+                    // referenceWhatsapp = response.reference;
+                    pdfPaynet(response.reference,cel_destiny_reference,name,lastname);
+                    }else if(channel == 2){
+                        // referenceWhatsapp = response.charges.data[0].payment_method.reference;
+                        showOxxoPay(response.amount,response.charges.data[0].payment_method.reference);
+                    }
+                }
+
+                
+            }
+        });
+    }else if(paymentMethod == 'tarjeta'){
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: data,
+            success: function(data){
+                console.log(data);
+                link = data.url
+                window.location.href = link;
+            }
+        });
+    }
 });
 
 function pdfPaynet(reference,celphone,name,lastname){

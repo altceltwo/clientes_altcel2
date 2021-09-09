@@ -277,23 +277,24 @@ var dataPay, referenceWhatsapp = '';
                 return false;
             }
 
-        axios.post('/create-reference-openpay', data, headers).then(response => {
-            
-            dataPay = response;
-            if(channel == 1){
-                referenceWhatsapp = response.data.reference;
-                pdfPaynet(response.data.reference,cel_destiny_reference,name,lastname);
-            }else if(channel == 2){
-                referenceWhatsapp = response.data.charges.data[0].payment_method.reference;
-                showOxxoPay(response.data.amount,response.data.charges.data[0].payment_method.reference);
-            }
-            $('#spinner-'+channelID).addClass('d-none');
-            $(this).attr('disabled',false);
-        }).catch(e => {
-            $('#spinner-'+channelID).addClass('d-none');
-            $(this).attr('disabled',false);
-            console.log(e);
-        })
+            $.ajax({
+                url: "{{url('/create-reference-openpay')}}",
+                method: "POST",
+                data: data,
+                success: function(response){
+
+                    if(channel == 1){
+                        referenceWhatsapp = response.reference;
+                        pdfPaynet(response.reference,cel_destiny_reference,name,lastname);
+                    }else if(channel == 2){
+                        referenceWhatsapp = response.charges.data[0].payment_method.reference;
+                        showOxxoPay(response.amount,response.charges.data[0].payment_method.reference);
+                    }
+                    
+                    $('#spinner-'+channelID).addClass('d-none');
+                    $('#pay_generate').attr('disabled',false);
+                }
+            });
     });
 
     $('#pay_generate_2').click(function(){

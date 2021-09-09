@@ -49,12 +49,12 @@ class OpenPayController extends Controller
         }
         try {
             // create instance OpenPay sandbox
-            $openpay = Openpay::getInstance('mvtmmoafnxul8oizkhju', 'sk_e69bbf5d1e30448688b24670bcef1743');
+            // $openpay = Openpay::getInstance('mvtmmoafnxul8oizkhju', 'sk_e69bbf5d1e30448688b24670bcef1743');
             // create instance OpenPay production
-            // $openpay = Openpay::getInstance('m3one5bybxspoqsygqhz', 'sk_1829d6a2ec22413baffb405b1495b51b');
+            $openpay = Openpay::getInstance('m3one5bybxspoqsygqhz', 'sk_1829d6a2ec22413baffb405b1495b51b');
             
-            Openpay::setProductionMode(false);
-            // Openpay::setProductionMode(true);
+            // Openpay::setProductionMode(false);
+            Openpay::setProductionMode(true);
             
             // create object customer
             $customer = array(
@@ -385,63 +385,49 @@ class OpenPayController extends Controller
 
             $user_id = auth()->user()->id;
 
-            if($referencestype == 1){
+            if($referencestype == 1 || $referencestype == 5){
                 $offer_id = $request->post('offer_id');
                 $rate_id = $request->post('rate_id');
                 $number_id = $request->post('number_id');
-                $dataReference = [
-                    'reference_id' => $reference_id,
-                    'reference' => $reference_id,
-                    'authorizacion' => $authorization,
-                    'transaction_type' => $transaction_type,
-                    'status' => $status,
-                    'creation_date' => $creation_date,
-                    'description' => $description,
-                    'error_message' => $error_message,
-                    'order_id' => $order_id,
-                    'payment_method' => $payment_method,
-                    'amount' => $amount,
-                    'currency' => $currency,
-                    'name' => $name,
-                    'lastname' => $lastname,
-                    'email' => $email,
-                    'channel_id' => $channel,
-                    'referencestype_id' => $referencestype,
-                    'number_id' => $number_id,
-                    'offer_id' => $offer_id,
-                    'rate_id' => $rate_id,
-                    'user_id' => $client_id,
-                    'client_id' => $client_id,
-                    'url_card_payment' => $url
-                ];
-                Reference::insert($dataReference);
+                $pack_id = null;
+            }else if($referencestype == 2){
+                $offer_id = null;
+                $rate_id = null;
+                $number_id = null;
+                $pack_id = $request->post('pack_id');
+            }
+
+            $dataReference = [
+                'reference_id' => $reference_id,
+                'reference' => $reference_id,
+                'authorizacion' => $authorization,
+                'transaction_type' => $transaction_type,
+                'status' => $status,
+                'creation_date' => $creation_date,
+                'description' => $description,
+                'error_message' => $error_message,
+                'order_id' => $order_id,
+                'payment_method' => $payment_method,
+                'amount' => $amount,
+                'currency' => $currency,
+                'name' => $name,
+                'lastname' => $lastname,
+                'email' => $email,
+                'channel_id' => $channel,
+                'referencestype_id' => $referencestype,
+                'number_id' => $number_id,
+                'offer_id' => $offer_id,
+                'rate_id' => $rate_id,
+                'user_id' => $client_id,
+                'pack_id' => $pack_id,
+                'client_id' => $client_id,
+                'url_card_payment' => $url
+            ];
+            Reference::insert($dataReference);
+
+            if($referencestype == 1){
                 Pay::where('id',$pay_id)->update(['reference_id' => $reference_id]);
             }else if($referencestype == 2){
-                $pack_id = $request->post('pack_id');
-                $dataReference = [
-                    'reference_id' => $reference_id,
-                    'reference' => $reference_id,
-                    'authorizacion' => $authorization,
-                    'transaction_type' => $transaction_type,
-                    'status' => $status,
-                    'creation_date' => $creation_date,
-                    'description' => $description,
-                    'error_message' => $error_message,
-                    'order_id' => $order_id,
-                    'payment_method' => $payment_method,
-                    'amount' => $amount,
-                    'currency' => $currency,
-                    'name' => $name,
-                    'lastname' => $lastname,
-                    'email' => $email,
-                    'channel_id' => $channel,
-                    'referencestype_id' => $referencestype,
-                    'pack_id' => $pack,
-                    'user_id' => $client_id,
-                    'client_id' => $client_id,
-                    'url_card_payment' => $url
-                ];
-                Reference::insert($dataReference);
                 Ethernetpay::where('id',$pay_id)->update(['reference_id' => $reference_id]);
             }
 

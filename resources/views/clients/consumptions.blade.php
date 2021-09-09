@@ -31,84 +31,75 @@
                         <p class="panel-subtitle"></p>
                     </header>
                     <div class="panel-body">
+						<div class="row mb-md">
+							<div class="col-md-4">
+								<span class="badge label label-{{$status_color}}">Estado: {{$status}}</span>
+							</div>
+							<div class="col-md-4">
+								<span class="badge label label-success">IMEI: {{$imei}}</span>
+							</div>
+							<div class="col-md-4">
+								<span class="badge label label-success">ICC: {{$icc}}</span>
+							</div>
+						</div>
+						
                         <div class="row">
                             <div class="col-md-6">
                                 <meter min="0" max="100" value="{{$FreeUnits['freePercentage']}}" id="meter"></meter>
                                 <h5 class="text-center text-bold text-dark">Porcentaje restante del plan contratado</h5>
 
-                                <section class="panel col-md-6">
-									<div class="panel-body bg-tertiary">
-										<div class="widget-summary widget-summary-xs">
-											<div class="widget-summary-col widget-summary-col-icon">
-												
-											</div>
-											<div class="widget-summary-col">
-												<div class="summary">
-													<h4 class="title text-bold">Unidades Totales: {{number_format($FreeUnits['totalAmt'],2)}}GB</h4>
-												
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
+								<div class="col-md-12 mt-2" >
+									<ul class="list-group col-md-12" id="data-dn-list">
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Unidades Totales: 
+											<span class="badge label label-success">{{number_format($FreeUnits['totalAmt'],2)}} GB</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Unidades Restantes: 
+											<span class="badge label label-success">{{number_format($FreeUnits['unusedAmt'],2)}} GB</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Inicio: 
+											<span class="badge label label-success">{{$effectiveDatePrimary}}</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Expira: 
+											<span class="badge label label-danger">{{$expireDatePrimary}}</span>
+										</li>
+									</ul>
+								</div>
 
-                                <section class="panel col-md-6">
-									<div class="panel-body bg-secondary">
-										<div class="widget-summary widget-summary-xs">
-											<div class="widget-summary-col widget-summary-col-icon">
-												
-											</div>
-											<div class="widget-summary-col">
-												<div class="summary">
-													<h4 class="title text-bold">Unidades Restantes: {{number_format($FreeUnits['unusedAmt'],2)}}GB</h4>
-													
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
+                                
 
                             </div>
                             <div class="col-md-6">
-                            @if($FreeUnits2Boolean == 1)
-                                <meter min="0" max="100" value="{{$FreeUnits2['freePercentage']}}" id="meterDark"></meter>
-                                <h5 class="text-center text-bold text-dark">Porcentaje de unidades libres en GB extras (recarga)</h5>
-                            @else
-                                <meter min="0" max="100" value="{{$FreeUnits2['freePercentage']}}" id="meterDark"></meter>
-                                <h5 class="text-center text-bold text-dark">Porcentaje de unidades libres en GB extras (sin recarga realizada)</h5>
-                            @endif
-
-                            <section class="panel col-md-6">
-									<div class="panel-body bg-tertiary">
-										<div class="widget-summary widget-summary-xs">
-											<div class="widget-summary-col widget-summary-col-icon">
-												
-											</div>
-											<div class="widget-summary-col">
-												<div class="summary">
-													<h4 class="title text-bold">Unidades Totales: {{number_format($FreeUnits2['totalAmt'],2)}}GB</h4>
-												
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
-
-                                <section class="panel col-md-6">
-									<div class="panel-body bg-secondary">
-										<div class="widget-summary widget-summary-xs">
-											<div class="widget-summary-col widget-summary-col-icon">
-												
-											</div>
-											<div class="widget-summary-col">
-												<div class="summary">
-													<h4 class="title text-bold">Unidades Restantes: {{number_format($FreeUnits2['unusedAmt'],2)}}GB</h4>
-													
-												</div>
-											</div>
-										</div>
-									</div>
-								</section>
+								@if($FreeUnits2Boolean == 1)
+									<meter min="0" max="100" value="{{$FreeUnits2['freePercentage']}}" id="meterDark"></meter>
+									<h5 class="text-center text-bold text-dark">Porcentaje de unidades libres en GB extras (recarga)</h5>
+								@else
+									<meter min="0" max="100" value="{{$FreeUnits2['freePercentage']}}" id="meterDark"></meter>
+									<h5 class="text-center text-bold text-dark">Porcentaje de unidades libres en GB extras (sin recarga realizada)</h5>
+								@endif
+								<div class="col-md-12 mt-2" >
+									<ul class="list-group col-md-12" id="data-dn-list">
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Unidades Totales: 
+											<span class="badge label label-success">{{number_format($FreeUnits2['totalAmt'],2)}} GB</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Unidades Restantes: 
+											<span class="badge label label-success">{{number_format($FreeUnits2['unusedAmt'],2)}} GB</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Inicio: 
+											<span class="badge label label-success">{{$effectiveDateSurplus}}</span>
+										</li>
+										<li class="list-group-item d-flex justify-content-between align-items-center text-dark">
+											Expira: 
+											<span class="badge label label-danger">{{$expireDateSurplus}}</span>
+										</li>
+									</ul>
+								</div>
                             </div>
                             
                         </div>

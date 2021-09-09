@@ -51,7 +51,7 @@ class ApiController extends Controller
         if($from == 'portal_cautivo'){
             return response()->json($response);
         }else{
-            return response()->json($response);
+            return $response;
         }
     
     }
