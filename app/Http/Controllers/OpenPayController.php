@@ -71,7 +71,6 @@ class OpenPayController extends Controller
                 'description' => $concepto,
                 'customer' => $customer
             );
-
             $charge = $openpay->charges->create($chargeRequest);
             $responseJson = new \stdClass();
             $reference_id = $charge->id;
@@ -325,7 +324,7 @@ class OpenPayController extends Controller
     }
 
     public function cardPaymentSend(Request $request){
-        
+
         $name = $request->post('name');
         $lastname = $request->post('lastname');
         $email = $request->post('email');
@@ -336,6 +335,7 @@ class OpenPayController extends Controller
         $referencestype = $request->post('referencestype');
         $client_id = $request->post('client_id');
         $pay_id = $request->post('pay_id');
+        $redirect = $request->post('redirect');
         
         // create instance OpenPay sandbox
         // $openpay = Openpay::getInstance('mvtmmoafnxul8oizkhju', 'sk_e69bbf5d1e30448688b24670bcef1743');
@@ -356,10 +356,10 @@ class OpenPayController extends Controller
                 'amount' => $amount,
                 'description' => $concepto,
                 'customer' => $customer,
-                'send_email' => false,
+                'send_email' => true,
                 'confirm' => false,
-                'redirect_url' => 'http://200.106.172.56/home');
-
+                'redirect_url' => $redirection = $redirect == null ? 'http://200.106.172.56/home' : $redirect);
+                // return $request;
             $charge = $openpay->charges->create($chargeRequest);
 
             $reference_id = $charge->id;
@@ -383,7 +383,7 @@ class OpenPayController extends Controller
             $creation_date = str_replace("-", "", $creation_date);
             $creation_date = str_replace(":", "", $creation_date);
 
-            $user_id = auth()->user()->id;
+            $user_id = $client_id;
 
             if($referencestype == 1 || $referencestype == 5){
                 $offer_id = $request->post('offer_id');
@@ -423,6 +423,7 @@ class OpenPayController extends Controller
                 'client_id' => $client_id,
                 'url_card_payment' => $url
             ];
+
             Reference::insert($dataReference);
 
             if($referencestype == 1){

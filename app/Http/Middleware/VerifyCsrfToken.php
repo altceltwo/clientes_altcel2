@@ -17,6 +17,10 @@ class VerifyCsrfToken extends Middleware
         '/createJWTTen',
         '/get-offers-rates-surplus',
         '/generateReferenceAPI',
-        '/saveIMG'
+        '/saveIMG',
+        '/get-offers-rates-surplus-public',
+        '/generateReferenceAPIPublic',
+        '/send-card-payment-public',
+        '/get-data-monthly-public'
     ];
 }

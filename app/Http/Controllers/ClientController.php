@@ -28,7 +28,6 @@ class ClientController extends Controller
                               ->join('numbers','numbers.id','=','activations.numbers_id')
                               ->join('users','users.id','=','activations.client_id')
                               ->join('rates','rates.id','=','activations.rate_id')
-                              ->where('rates.type','publico')
                               ->select('users.*','numbers.MSISDN AS number','numbers.producto AS product','rates.name AS rate_name')
                               ->get();
         return view('clients.recharge',$data);
@@ -631,6 +630,72 @@ class ClientController extends Controller
         }
     }
 
+    public function getInfoUFPublic($msisdn){
+        $bool = Number::where('MSISDN',$msisdn)->exists();
+
+        if($bool){
+            $consultUF = app('App\Http\Controllers\AltanController')->consultUF($msisdn);
+            // return $consultUF;
+            $responseSubscriber = $consultUF['responseSubscriber'];
+            $information = $responseSubscriber['information'];
+            $status = $responseSubscriber['status']['subStatus'];
+            $freeUnits = $responseSubscriber['freeUnits'];
+
+            $data = [];
+            $data['exists'] = 1;
+            $data['status'] = $status;
+            $data['imei'] = $information['IMEI'];
+            $data['icc'] = $information['ICCID'];
+
+            if($status == 'Active'){
+                $data['status_color'] = 'success';
+            }else if($status == 'Suspend (B2W)'){
+                $data['status_color'] = 'warning';
+            }
+            $data['FreeUnitsBoolean'] = 0;
+            $data['FreeUnits2Boolean'] = 0;
+
+            for ($i=0; $i < sizeof($freeUnits); $i++) {
+                if($freeUnits[$i]['name'] == 'Free Units' || $freeUnits[$i]['name'] == 'FU_Altan-RN'){
+                    $totalAmt = $freeUnits[$i]['freeUnit']['totalAmt'];
+                    $unusedAmt = $freeUnits[$i]['freeUnit']['unusedAmt'];
+                    $percentageFree = ($unusedAmt/$totalAmt)*100;
+                    $data['FreeUnits'] = array('totalAmt'=>$totalAmt/1024,'unusedAmt'=>$unusedAmt/1024,'freePercentage'=>$percentageFree);
+                    $data['FreeUnitsBoolean'] = 1;
+
+                    $detailOfferings = $freeUnits[$i]['detailOfferings'];
+
+                    $data['effectiveDatePrimary'] = ClientController::formatDateConsultUF($detailOfferings[0]['effectiveDate']);
+                    $data['expireDatePrimary'] = ClientController::formatDateConsultUF($detailOfferings[0]['expireDate']);
+                }
+
+                if($freeUnits[$i]['name'] == 'Free Units 2' || $freeUnits[$i]['name'] == 'FU_Altan-RN_P2'){
+                    $totalAmt = $freeUnits[$i]['freeUnit']['totalAmt'];
+                    $unusedAmt = $freeUnits[$i]['freeUnit']['unusedAmt'];
+                    $percentageFree = ($unusedAmt/$totalAmt)*100;
+                    $data['FreeUnits2'] = array('totalAmt'=>$totalAmt/1024,'unusedAmt'=>$unusedAmt/1024,'freePercentage'=>$percentageFree);
+                    $data['FreeUnits2Boolean'] = 1;
+
+                    $detailOfferings = $freeUnits[$i]['detailOfferings'];
+
+                    $data['effectiveDateSurplus'] = ClientController::formatDateConsultUF($detailOfferings[0]['effectiveDate']);
+                    $data['expireDateSurplus'] = ClientController::formatDateConsultUF($detailOfferings[0]['expireDate']);
+                }
+            }
+
+            if($data['FreeUnits2Boolean'] == 0){
+                $data['FreeUnits2'] = array('totalAmt'=>0,'unusedAmt'=>0,'freePercentage'=>0);
+                $data['effectiveDateSurplus'] = 'No se ha generado recarga.';
+                $data['expireDateSurplus'] = 'No se ha generado recarga.';
+            }
+
+            return $data;
+        }else{
+            $data['exists'] = 0;
+            return $data;
+        }
+    }
+
     public function formatDateConsultUF($date){
         $year = substr($date,0,4);
         $month = substr($date,4,2);
@@ -688,5 +753,60 @@ class ClientController extends Controller
         $data['dataMSISDN']['email_user'] = $dataClient[0]->email;
         // return $data;
         return view('clients.changeProduct',$data);
+    }
+
+    public function getDataMonthly(Request $request){
+        $msisdn = $request->post('msisdn');
+
+        $dataMSISDN = DB::table('numbers')
+                         ->join('activations','activations.numbers_id','=','numbers.id')
+                         ->join('users','users.id','=','activations.client_id')
+                         ->join('clients','clients.user_id','=','users.id')
+                         ->where('numbers.MSISDN',$msisdn)
+                         ->select('numbers.id AS number_id','activations.expire_date AS expire_date','activations.id AS activation_id',
+                         'users.name AS name_user','users.lastname AS lastname_user','users.email AS email_user','clients.cellphone AS cellphone_user')
+                         ->get();
+            
+        $data['information'] = array(
+            'number_id' => $dataMSISDN[0]->number_id,
+            'expire_date' => $dataMSISDN[0]->expire_date,
+            'activation_id' => $dataMSISDN[0]->activation_id,
+            'name_user' => $dataMSISDN[0]->name_user,
+            'lastname_user' => $dataMSISDN[0]->lastname_user,
+            'email_user' => $dataMSISDN[0]->email_user,
+            'cellphone_user' => $dataMSISDN[0]->cellphone_user
+        );
+        return $data;
+    }
+
+    public function getMonthlyPayment(Request $request){
+        $activation_id = $request->get('activation_id');
+
+        $data['payment'] = DB::table('pays')
+                             ->join('activations','activations.id','=','pays.activation_id')
+                             ->where('pays.activation_id',$activation_id)
+                             ->where('pays.status','pendiente')
+                             ->select('pays.id AS pay_id','pays.activation_id AS activation_id','pays.amount AS amount','pays.status AS status_payment',
+                             'activations.offer_id AS offer_id','activations.rate_id AS rate_id')
+                             ->orderBy('pays.date_pay','desc')
+                             ->limit(1)
+                             ->get();
+            
+        return $data;
+    }
+
+    public function verifyExistsMSISDN($msisdn){
+        $x = Number::where('msisdn',$msisdn)->exists();
+        if($x){
+            $x = Number::where('msisdn',$msisdn)->first();
+            $producto = trim($x->producto);
+            if($producto == 'MOV'){
+                return response()->json(['http_code'=>0,'message'=>'El número de SIM '.$msisdn.' es de producto inválido.']);
+            }else{
+                return response()->json(['http_code'=>1,'message'=>'MSISDN existente.']);
+            }
+        }else{
+            return response()->json(['http_code'=>0,'message'=>'El número de SIM '.$msisdn.' es de otra compañía.']);
+        }
     }
 }

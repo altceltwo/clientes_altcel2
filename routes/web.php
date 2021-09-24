@@ -22,6 +22,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('activations', 'ActivationController')->middleware('auth');
 Route::resource('clients','ClientController');
+Route::resource('petition','PetitionController')->middleware('auth');
+
 // OpenPay Routes
 Route::post('/create-reference-openpay','ReferenceController@createReference')->name('create-reference.post');
 Route::post('/webhook-openpay','WebhookController@notificationOpenPay');
@@ -56,6 +58,16 @@ Route::get('/update-my-profile','UserController@updateMyProfile')->name('update-
 Route::get('/card-payment/{id}/{type}/{user_id}','OpenPayController@cardPayment');
 Route::post('/send-card-payment','OpenPayController@cardPaymentSend');
 
+// API's Públicas
+Route::post('/get-offers-rates-surplus-public','ApiController@getOffersRatesSurplus');
+Route::post('/generateReferenceAPIPublic','ApiController@generateReference');
+Route::post('/send-card-payment-public','OpenPayController@cardPaymentSend');
+Route::get('/get-offers-rates-diff-public','ApiController@getOffersRatesDiffPublic');
+Route::post('/get-data-monthly-public','ClientController@getDataMonthly');
+Route::get('/consultUF-public/{msisdn}','ClientController@getInfoUFPublic');
+Route::get('/get-monthly-payment-public','ClientController@getMonthlyPayment');
+Route::get('/verify-exists-msisdn/{msisdn}','ClientController@verifyExistsMSISDN');
+
 // API's
 
 Route::post('/createJWT','AuthJWTController@createJWT');
@@ -74,7 +86,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/save-manual-pay','ApiController@saveManualPay')->name('save-manual-pay.get');
     Route::get('/get-offers-rates-diff','ApiController@getOffersRatesDiff')->name('getOffersRatesDiff.get');
 });
+
 Route::get('/descargarPDF/{datos}','PDFController@PDF')->name('descargarPDF.get');
 Route::get('myReferences', 'ClientController@myReferences')->name('myReferences');
 
 Route::get('preactivation', 'ActivationController@index')->name('preactivation')->middleware('auth');
+
+Route::get('/dealer-index','DealerController@index');
+Route::get('/petitions-completed','PetitionController@completedPetitions')->name('petition.completed')->middleware('auth');

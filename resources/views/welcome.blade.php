@@ -59,7 +59,6 @@
                     <div class="col-xs-12 text-xs-center pt-2">
                         <p class="socialIcon card-text">
                             <a href="{{ route('login') }}" class="btn btn-success">Iniciar Sesión</a>
-                            <a href="{{ route('register') }}" class="btn btn-primary">Registrarse</a>
                         </p>
                     </div>
                 </div>

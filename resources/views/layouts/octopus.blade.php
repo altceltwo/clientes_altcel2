@@ -384,6 +384,23 @@
                                             </li>
                                         </ul>
                                     </li>
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                            <span>Solicitudes</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('petition.create')}}">Nueva</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.index')}}">Pendientes</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.completed')}}">Completadas</a>
+                                            </li>
+                                        </ul>
+                                    </li>
                                     <li>
                                         <a href="{{route('preactivation')}}">
                                             <i class="fa fa-book" aria-hidden="true"></i>

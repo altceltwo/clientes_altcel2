@@ -10,6 +10,7 @@ use App\GuzzleHttp;
 class ApiController extends Controller
 {
     public function getOffersRatesSurplus(Request $request){
+        // return $request;
         $msisdn = $request->get('msisdn');
         $response = Http::withHeaders([
             'Content-Type' => 'application/json'
@@ -23,6 +24,16 @@ class ApiController extends Controller
         $response = Http::withHeaders([
             'Content-Type' => 'application/json'
         ])->get('http://crm.altcel/get-offers-rates-diff-api',['msisdn'=>$msisdn]);
+
+        return $response;
+    }
+
+    public function getOffersRatesDiffPublic(Request $request){ 
+        $msisdn = $request->get('msisdn');
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json'
+        ])->get('http://crm.altcel/get-offers-rates-diff-api-public',['msisdn'=>$msisdn]);
 
         return $response;
     }
