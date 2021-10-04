@@ -153,11 +153,26 @@
                                         <option value="MIFI">MIFI</option>
                                     </select>
                                 </div>
+                                <div class="col-md-4 mt-xs mb-md">
+                                    <label for="rates">Plan Activación</label>
+                                    <select id="rates" name="rate_activation" class="form-control form-control-sm" required="">
+                                        <option value="0" selected>Elige uno...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mt-xs mb-md">
+                                    <label for="ratesSecond">Plan Subsecuente</label>
+                                    <select id="ratesSecond" name="rate_secondary" class="form-control form-control-sm" required="">
+                                        <option selected value="Ninguno">Elige uno...</option>
+                                        @foreach($rates as $rate)
+                                        <option value="{{$rate->id}}">{{$rate->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
                                 <div class="col-md-12 mt-xs mb-md">
                                     <div class="col-md-4">
                                         <label for="comment">Comentario (opcional):</label>
-                                        <textarea class="form-control" name="comment" id="comment" cols="30" rows="3"></textarea>
+                                        <textarea class="form-control" name="comment" id="comment" cols="30" rows="3" placeholder="Escribe algo"></textarea>
                                     </div>
                                 </div>
 
@@ -253,6 +268,8 @@
         let ine_code = $('#ine_code').val();
         let cellphone = $('#cellphone').val();
         let product = $('#product').val();
+        let rate_activation = $('#rates').val();
+        let rate_secondary = $('#ratesSecond').val();
 
         if(name.length == 0 || /^\s+$/.test(name)){
             let message = "El campo Nombre no puede estar vacío.";
@@ -317,6 +334,20 @@
             return false;
         }
 
+        if(rate_activation == 0){
+            let message = "Debe elegir un plan de activación.";
+            sweetAlertFunction(message);
+            document.getElementById('rates').focus();
+            return false;
+        }
+
+        if(rate_secondary == 0){
+            let message = "Debe elegir un plan secundario.";
+            sweetAlertFunction(message);
+            document.getElementById('ratesSecond').focus();
+            return false;
+        }
+
         $('#formPetition').submit();
 
     });
@@ -330,5 +361,24 @@
             timer: 2000
         });
     }
+
+    $('#product').change(function(){
+        let producto = $(this).val();
+        let options = '<option value="0">Elige uno...</option>';
+
+        $.ajax({
+            url: "{{route('petition.rates')}}",
+            data:{producto: producto},
+            success: function(response){
+
+                response.forEach(function(element){
+                    options+="<option value='"+element.id+"'>"+element.name+" - $"+parseFloat(element.price).toFixed(2)+"</option>"
+                });
+
+                $('#rates').html(options);
+                $('#ratesSecond').html(options);
+            }
+        });
+    })
 </script>
 @endsection

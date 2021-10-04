@@ -94,3 +94,4 @@ Route::get('preactivation', 'ActivationController@index')->name('preactivation')
 
 Route::get('/dealer-index','DealerController@index');
 Route::get('/petitions-completed','PetitionController@completedPetitions')->name('petition.completed')->middleware('auth');
+Route::get('/get-rates-petition','PetitionController@getRatesPetition')->name('petition.rates')->middleware('auth');

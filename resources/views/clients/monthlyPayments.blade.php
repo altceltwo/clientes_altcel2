@@ -179,35 +179,35 @@ use \Carbon\Carbon;
                     if(extraAmount){
                         montoExtra = extraAmount;
                         
+                        Swal.fire({
+                            title: 'Verifique los datos siguientes:',
+                            html: "<li class='list-alert'><b>Monto: </b>$"+monto+"</li><br>"+
+                            "<li class='list-alert'><b>Extra: </b>$"+montoExtra+"</li><br>",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Guardar',
+                            cancelButtonText: 'Cancelar',
+                            customClass: {
+                                confirmButton: 'btn btn-success mr-md',
+                                cancelButton: 'btn btn-danger '
+                            },
+                            buttonsStyling: false,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                registryPay(service, payID, monto, typePay, folioPay, estadoPay, montoExtra);
+                            } else if (
+                                /* Read more about handling dismissals below */
+                                result.dismiss === Swal.DismissReason.cancel
+                            ) {
                                 Swal.fire({
-                                    title: 'Verifique los datos siguientes:',
-                                    html: "<li class='list-alert'><b>Monto: </b>$"+monto+"</li><br>"+
-                                    "<li class='list-alert'><b>Extra: </b>$"+montoExtra+"</li><br>",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Guardar',
-                                    cancelButtonText: 'Cancelar',
-                                    customClass: {
-                                        confirmButton: 'btn btn-success mr-md',
-                                        cancelButton: 'btn btn-danger '
-                                    },
-                                    buttonsStyling: false,
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        registryPay(service, payID, monto, typePay, folioPay, estadoPay, montoExtra);
-                                    } else if (
-                                        /* Read more about handling dismissals below */
-                                        result.dismiss === Swal.DismissReason.cancel
-                                    ) {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Operación cancelada',
-                                            text: 'No se registro ningún pago.',
-                                            showConfirmButton: false,
-                                            timer: 1000
-                                        })
-                                    }
+                                    icon: 'error',
+                                    title: 'Operación cancelada',
+                                    text: 'No se registro ningún pago.',
+                                    showConfirmButton: false,
+                                    timer: 1000
                                 })
+                            }
+                        })
                     }
 
             }

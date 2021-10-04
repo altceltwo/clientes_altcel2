@@ -29,6 +29,8 @@
                 <tr>
                 <th scope="col">Cliente</th>
                 <th scope="col">Producto</th>
+                <th scope="col">Plan Activación</th>
+                <th scope="col">Plan Subsecuente</th>
                 <th scope="col">Status</th>
                 <th scope="col">Fecha Solicitud</th>
                 <th scope="col">Activado por</th>
@@ -41,6 +43,8 @@
             <tr style="cursor: pointer;">
                 <td>{{ $petition['client_name'] }}</td>
                 <td>{{ $petition['product'] }}</td>
+                <td>{{ $petition['rate_activation'] }}</td>
+                <td>{{ $petition['rate_secondary'] }}</td>
                 <td><span class="badge label-{{$petition['colorStatus']}}">{{ $petition['status'] }}</span></td>
                 <td>{{ $petition['date_sent'] }}</td>
                 <td><span class="badge label-{{$petition['colorActivated']}}">{{ $petition['who_activated'] }}</span></td>

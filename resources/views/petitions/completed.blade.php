@@ -29,6 +29,7 @@
                 <tr>
                 <th scope="col">Cliente</th>
                 <th scope="col">Producto</th>
+                <th scope="col">Plan Activación</th>
                 <th scope="col">Status</th>
                 <th scope="col">Cobro CPE</th>
                 <th scope="col">Cobro PLAN</th>
@@ -45,6 +46,7 @@
             <tr style="cursor: pointer;">
                 <td>{{ $petition['client_name'] }}</td>
                 <td>{{ $petition['product'] }}</td>
+                <td>{{ $petition['rate_activation'] }}</td>
                 <td><span class="badge label-success">{{ $petition['status'] }}</span></td>
                 <td>${{ number_format($petition['collected_device'],2) }}</td>
                 <td>${{ number_format($petition['collected_rate'],2) }}</td>

@@ -379,9 +379,7 @@
                                             <li>
                                                 <a href="{{route('clients.create')}}">Nuevo</a>
                                             </li>
-                                            <li>
-                                                <a href="{{route('activations.create')}}">Preactivación</a>
-                                            </li>
+                                           
                                         </ul>
                                     </li>
                                     <li class="nav-parent">
@@ -400,11 +398,6 @@
                                                 <a href="{{route('petition.completed')}}">Completadas</a>
                                             </li>
                                         </ul>
-                                    </li>
-                                    <li>
-                                        <a href="{{route('preactivation')}}">
-                                            <i class="fa fa-book" aria-hidden="true"></i>
-                                            Mis Preactivaciones</a>
                                     </li>
                                     <li>
                                         <a href="{{route('recharge')}}">
@@ -440,15 +433,7 @@
                                             <li>
                                                 <a href="{{route('clients.create')}}">Nuevo</a>
                                             </li>
-                                            <li>
-                                                <a href="{{route('activations.create')}}">Preactivación</a>
-                                            </li>
                                         </ul>
-					                    <li>
-                                            <a href="{{route('preactivation')}}">
-                                                <i class="fa fa-book" aria-hidden="true"></i>
-                                                Mis Preactivaciones</a>
-                                        </li>
                                     </li>
                                 @elseif(Auth::user()->role_id == 3)
                                     <li class="nav-active">
