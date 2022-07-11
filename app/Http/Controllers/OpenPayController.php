@@ -36,7 +36,7 @@ class OpenPayController extends Controller
         $client_id = $request->input('client_id');
         // $pay_id = $request->input('pay_id');
         
-        if($type == 1 || $type == 4)
+        if($type == 1 || $type == 4 || $type == 5)
         {
             $number_id = $request->input('number_id');
             $offerID = $request->input('offer_id');
@@ -97,7 +97,7 @@ class OpenPayController extends Controller
 
             $user_id = auth()->user()->id;
 
-            if($type == 1 || $type == 4){
+            if($type == 1 || $type == 4 || $type == 5){
                 $dataReference = [
                     'reference_id' => $reference_id,
                     'reference' => $reference,
@@ -338,12 +338,12 @@ class OpenPayController extends Controller
         $redirect = $request->post('redirect');
         
         // create instance OpenPay sandbox
-        // $openpay = Openpay::getInstance('mvtmmoafnxul8oizkhju', 'sk_e69bbf5d1e30448688b24670bcef1743');
+        $openpay = Openpay::getInstance('mvtmmoafnxul8oizkhju', 'sk_e69bbf5d1e30448688b24670bcef1743');
         // create instance OpenPay production
-        $openpay = Openpay::getInstance('m3one5bybxspoqsygqhz', 'sk_1829d6a2ec22413baffb405b1495b51b');
+        // $openpay = Openpay::getInstance('m3one5bybxspoqsygqhz', 'sk_1829d6a2ec22413baffb405b1495b51b');
         
-        // Openpay::setProductionMode(false);
-        Openpay::setProductionMode(true);
+        Openpay::setProductionMode(false);
+        // Openpay::setProductionMode(true);
 
             $customer = array(
                 'name' => $name,
@@ -358,7 +358,7 @@ class OpenPayController extends Controller
                 'customer' => $customer,
                 'send_email' => true,
                 'confirm' => false,
-                'redirect_url' => $redirection = $redirect == null ? 'http://200.106.172.56/home' : $redirect);
+                'redirect_url' => $redirection = $redirect == null ? 'http://187.217.216.244/home' : $redirect);
                 // return $request;
             $charge = $openpay->charges->create($chargeRequest);
 

@@ -289,6 +289,9 @@ var dataPay, referenceWhatsapp = '';
                     }else if(channel == 2){
                         referenceWhatsapp = response.charges.data[0].payment_method.reference;
                         showOxxoPay(response.amount,response.charges.data[0].payment_method.reference);
+                    }else if(channel == 3){
+                        console.log(response);
+                        window.location.href = response.url;
                     }
                     
                     $('#spinner-'+channelID).addClass('d-none');
@@ -298,10 +301,7 @@ var dataPay, referenceWhatsapp = '';
     });
 
     $('#pay_generate_2').click(function(){
-        // $.get("https://api.copomex.com/query/info_cp/29000?type=simplified&token=pruebas",function(datos1) {
-        //     x = datos1;
-        //     console.log(datos1);
-        // });
+
         let channelID = $(this).attr('id');
         $('#spinner-'+channelID).removeClass('d-none');
         $(this).attr('disabled',true);
@@ -325,7 +325,8 @@ var dataPay, referenceWhatsapp = '';
                 _token:token, name: name, lastname: lastname, email: email,
                 cel_destiny_reference: cel_destiny_reference, amount: amount, 
                 concepto: concepto, type: type, channel: channel, pack_id: pack_id, 
-                user_id: user_id, client_id: client_id, pay_id: pay_id, quantity: 1
+                user_id: client_id, client_id: client_id, pay_id: pay_id, quantity: 1,
+                offer_id:0, number_id:0, rate_id:0
             };
 
             if(channel == 0){
@@ -342,23 +343,27 @@ var dataPay, referenceWhatsapp = '';
                 return false;
             }
 
-        axios.post('/create-reference-openpay', data, headers).then(response => {
-        
-        dataPay = response;
-        if(channel == 1){
-            referenceWhatsapp = response.data.reference;
-            pdfPaynet(response.data.reference,cel_destiny_reference,name,lastname);
-        }else if(channel == 2){
-            referenceWhatsapp = response.data.charges.data[0].payment_method.reference;
-            showOxxoPay(response.data.amount,response.data.charges.data[0].payment_method.reference,);
-        }
-        $('#spinner-'+channelID).addClass('d-none');
-        $(this).attr('disabled',false);
-        }).catch(e => {
-            $('#spinner-'+channelID).addClass('d-none');
-            $(this).attr('disabled',false);
-            console.log(e);
-        })
+        $.ajax({
+            url: "{{url('/create-reference-openpay')}}",
+            method: "POST",
+            data: data,
+            success: function(response){
+
+                if(channel == 1){
+                    referenceWhatsapp = response.reference;
+                    pdfPaynet(response.reference,cel_destiny_reference,name,lastname);
+                }else if(channel == 2){
+                    referenceWhatsapp = response.charges.data[0].payment_method.reference;
+                    showOxxoPay(response.amount,response.charges.data[0].payment_method.reference);
+                }else if(channel == 3){
+                    console.log(response);
+                    window.location.href = response.url;
+                }
+                
+                // $('#spinner-'+channelID).addClass('d-none');
+                $('#pay_generate_2').attr('disabled',false);
+            }
+        });
     });
 
     function pdfPaynet(reference,celphone,name,lastname){

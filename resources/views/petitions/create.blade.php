@@ -144,6 +144,22 @@
                                         </section>
                                     </div>
                                 </div>
+                                <div class="col-md-12 mt-xs mb-md">
+                                    <div class="checkbox">
+                                        <label class="control-label">
+                                            <input type="checkbox" id="diffLADA">
+                                            LADA Diferente
+                                        </label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group input-group-icon d-none" id="containerLADA">
+                                            <span class="input-group-addon">
+                                                <span class="icon"><i class="fa fa-phone"></i></span>
+                                            </span>
+                                            <input class="form-control" type="text" placeholder="961" id="lada" name="lada" maxlength="3" required>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="col-md-4 mt-xs mb-md">
                                     <label for="product">Producto</label>
@@ -151,6 +167,7 @@
                                         <option selected value="Ninguno">Ninguno...</option>
                                         <option value="HBB">HBB</option>
                                         <option value="MIFI">MIFI</option>
+                                        <option value="MOV">MOV</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 mt-xs mb-md">
@@ -167,6 +184,21 @@
                                         <option value="{{$rate->id}}">{{$rate->name}}</option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <div class="col-md-4 mt-xs mb-md">
+                                    <label for="payment_way">Forma de Pago</label>
+                                    <select id="payment_way" name="payment_way" class="form-control form-control-sm" required="">
+                                        <option selected value="0">Elige uno...</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Transferencia">Transferencia</option>
+                                        <option value="Desc. Vía Nómina">Desc. Vía Nómina</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4 mt-xs mb-md d-none" id="contentPlazo">
+                                    <label for="plazo">Plazo (quincenal)</label>
+                                    <input type="number" id="plazo" name="plazo" class="form-control form-control-sm" min="0" value="0">
                                 </div>
 
                                 <div class="col-md-12 mt-xs mb-md">
@@ -237,6 +269,17 @@
         }
     }
 
+    $('#payment_way').change(function(){
+        let value = $(this).val();
+         if(value == 'Desc. Vía Nómina'){
+             $('#contentPlazo').removeClass('d-none');
+         }else{
+            $('#contentPlazo').addClass('d-none');
+         }
+
+         $('#plazo').val(0);
+    });
+
     $('#cellphone').on('input', function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
@@ -270,6 +313,9 @@
         let product = $('#product').val();
         let rate_activation = $('#rates').val();
         let rate_secondary = $('#ratesSecond').val();
+        let payment_way = $('#payment_way').val();
+        let plazo = $('#plazo').val();
+        let lada = $('#lada').val();
 
         if(name.length == 0 || /^\s+$/.test(name)){
             let message = "El campo Nombre no puede estar vacío.";
@@ -285,38 +331,10 @@
             return false;
         }
 
-        if(rfc.length == 0 || /^\s+$/.test(rfc)){
-            let message = "El campo RFC no puede estar vacío.";
-            sweetAlertFunction(message);
-            document.getElementById('rfc').focus();
-            return false;
-        }
-
-        if(date_born.length == 0 || /^\s+$/.test(date_born)){
-            let message = "El campo Fecha Nacimiento no puede estar vacío.";
-            sweetAlertFunction(message);
-            document.getElementById('date_born').focus();
-            return false;
-        }
-
         if(address.length == 0 || /^\s+$/.test(address)){
             let message = "El campo Dirección no puede estar vacío.";
             sweetAlertFunction(message);
             document.getElementById('address').focus();
-            return false;
-        }
-
-        if(email.length == 0 || /^\s+$/.test(email)){
-            let message = "El campo Email no puede estar vacío.";
-            sweetAlertFunction(message);
-            document.getElementById('email').focus();
-            return false;
-        }
-
-        if(ine_code.length == 0 || /^\s+$/.test(ine_code)){
-            let message = "El campo Código INE no puede estar vacío.";
-            sweetAlertFunction(message);
-            document.getElementById('ine_code').focus();
             return false;
         }
 
@@ -348,8 +366,44 @@
             return false;
         }
 
+        if(payment_way == 0){
+            let message = "Debe elegir una forma de pago.";
+            sweetAlertFunction(message);
+            document.getElementById('payment_way').focus();
+            return false;
+        }
+
+        if(payment_way == 'Desc. Vía Nómina'){
+            if(plazo == 0){
+                let message = "Ingrese un plazo válido mayor a 0.";
+                sweetAlertFunction(message);
+                document.getElementById('plazo').focus();
+                return false;
+            }
+        }
+
+        if($('#diffLADA').prop('checked')) {
+            if(lada.length == 0 || /^\s+$/.test(lada)){
+                let message = "El campo de LADA no puede estar vacío, si no desea añadir la LADA, quite el check de LADA Diferente.";
+                sweetAlertFunction(message);
+                document.getElementById('lada').focus();
+                return false;
+            }
+        }
+        // console.log('SUCCESS, TODO GOOD');
+        // return false;
+
         $('#formPetition').submit();
 
+    });
+
+    $('#diffLADA').click(function(){
+        if($('#diffLADA').prop('checked')) {
+            $('#containerLADA').removeClass('d-none');
+            document.getElementById('lada').focus();
+        }else{
+            $('#containerLADA').addClass('d-none');
+        }
     });
 
     function sweetAlertFunction(message){

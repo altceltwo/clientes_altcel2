@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use PDF;
+use DB;
 use App\User;
 use App\Contract;
 
@@ -34,21 +35,52 @@ class PDFController extends Controller
         $data['product'] = $request->product;
         $data['msisdn'] = $request->msisdn;
         $data['icc'] = $request->icc;
-        $data['typePayment'] = $request->typePayment;
-        $data['bank'] = $request->bank;
-        $data['cardNumber'] = $request->cardNumber;
-        $data['cvv'] = $request->cvv;
-        $data['monthExpiration'] = $request->monthExpiration;
-        $data['yearExpiration'] = $request->yearExpiration;
         $data['invoiceBool'] = $request->invoiceBool;
         $data['rightsMinBool'] = $request->rightsMinBool;
         $data['contractAdhesionBool'] = $request->contractAdhesionBool;
         $data['useInfoFirst'] = $request->useInfoFirst;
         $data['useInfoSecond'] = $request->useInfoSecond;
         $data['who_did_id'] = $request->who_did_id;
+        $firma = $request->firma;
+       
 
-        $data['signature'] = "signature".$data['client_id'].".png";
-        Contract::insert($data);
+        $validateExists = Contract::where('msisdn',$data['msisdn'])->exists();
+
+        if($firma == null || $firma == 'null'){
+            $data['signature'] = null;
+        }else{
+            if($validateExists){
+               $contractExist =  Contract::where('msisdn',$data['msisdn'])->first();
+               $data['signature'] = $contractExist->signature;
+            }else{
+                $data['signature'] = "signature".$data['client_id'].".png";
+            }
+        }
+        // return $data['signature'];
+
+        $dataActivation = DB::table('numbers')
+                             ->join('activations','activations.numbers_id','=','numbers.id')
+                             ->where('numbers.MSISDN',$data['msisdn'])
+                             ->select('activations.id AS activation_id','activations.date_activation AS date_activation')
+                             ->get();
+
+        $data['activation_id'] = $dataActivation[0]->activation_id;
+
+        
+        if(!$validateExists){
+            Contract::insert($data);
+        }
+        $data['date_activation'] = $dataActivation[0]->date_activation;
+
+        if($data['product'] == 'MIFI'){
+            $data['description'] = 'Plan 5GB MIFI';
+            $data['folioIFT'] = '397885';
+            $data['priceMonthly'] = '100';
+        }else if($data['product'] == 'HBB'){
+            $data['description'] = 'Plan 50GB 5MBPS HBB';
+            $data['folioIFT'] = '405974';
+            $data['priceMonthly'] = '189';
+        }
 
         // return $request;
         $pdf = PDF::loadView('layouts.prueba',$data);

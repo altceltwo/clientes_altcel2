@@ -19,7 +19,16 @@ class ReferenceController extends Controller
             $x = app('App\Http\Controllers\OpenPayController')->store($request);
         }else if($channel == 2){
             $x = $this->ConektaPayment->createOrder($request);
+        }else if($channel == 3){
+            $x = $this->ConektaPayment->createPaymentLink($request);
+        }else if($channel == 4){
+            $x = $this->ConektaPayment->createPaymentLinkAllMethods($request);
         }
+        return $x;
+    }
+
+    public function multipaymentOreda(Request $request){
+        $x = $this->ConektaPayment->multiPaymentOreda($request);
         return $x;
     }
 }

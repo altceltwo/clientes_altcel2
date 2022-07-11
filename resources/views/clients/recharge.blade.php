@@ -22,7 +22,7 @@
 @endif
 <!-- Final Dashboard -->
 
-@if(Auth::user()->role_id == 4)
+@if(Auth::user()->role_id == 4 || Auth::user()->role_id == 8 || Auth::user()->role_id == 7)
     <section class="panel">
         <header class="panel-heading">
             <div class="panel-actions">
@@ -57,6 +57,7 @@
             </table>
         </div>
     </section>
+@if(Auth::user()->role_id == 4 || Auth::user()->role_id == 8)
 <div class="modal fade" id="modalPaymentOptions" tabindex="-1" role="dialog" aria-labelledby="myModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -74,7 +75,9 @@
                                 <center>
                                     <a href="" class="btn btn-success mt-md" id="monthlyPayment">Pago Mensual</a>
                                     <a href="" class="btn btn-primary mt-md" id="surplusPayment">Pago Excedente</a>
+                                    @if(Auth::user()->role_id != 8)
                                     <a href="" class="btn btn-warning mt-md" id="changeProduct">Cambio de Producto</a>
+                                    @endif
                                 </center>
                             </div>
                         </div>
@@ -88,6 +91,7 @@
         </div>
     </div>
 </div>
+@endif
 @endif
 
 

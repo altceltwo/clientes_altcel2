@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login').'?user='.$user }}" id="formDealerLogin">
                         @csrf
 
                         <div class="form-group row">
@@ -70,4 +70,14 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        if (typeof(Storage) !== "undefined") {
+            alert('LocalStorage Soportado');
+        } else {
+            // LocalStorage no soportado en este navegador
+            alert('LocalStorage NO Soportado');
+        }
+    });
+</script>
 @endsection

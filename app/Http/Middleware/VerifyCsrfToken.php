@@ -21,6 +21,16 @@ class VerifyCsrfToken extends Middleware
         '/get-offers-rates-surplus-public',
         '/generateReferenceAPIPublic',
         '/send-card-payment-public',
-        '/get-data-monthly-public'
+        '/get-data-monthly-public',
+        '/purchase-pos',
+        '/purchase-pos-test',
+        '/change-product-pos',
+        '/change-product-pos-test',
+        '/save-manual-pay-pos',
+        '/webhook-altan-redes',
+        '/order-create',
+        '/get-data-monthly-oreda-public',
+        '/multipayment-oreda',
+        '/appUser'
     ];
 }

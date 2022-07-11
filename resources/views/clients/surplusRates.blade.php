@@ -72,7 +72,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="lastname">Concepto: </label>
-                    <input type="email" class="form-control form-control-sm" id="concepto" placeholder="Concepto" value="Compra de GB's Altcel.">
+                    <input type="email" class="form-control form-control-sm" id="concepto" placeholder="Concepto" value="Compra de GBs Altcel." readonly>
                 </div>
                 <div class="col-md-4">
                     <label for="channel">Métodos de Pago</label>
@@ -92,8 +92,7 @@
                 <input type="hidden" id="offer_id" value="0">
 
                 <div class="col-md-12 mt-md">
-                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="accept" data-type="referencia">Referencia <i class="fa fa-money"></i></button>
-                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="acceptCard" data-type="tarjeta">Tarjeta <i class="fa fa-money"></i></button>
+                    <button type="button" class="mb-xs mt-xs mr-xs btn btn-success" id="accept" data-type="referencia">Aceptar <i class="fa fa-money"></i></button>
                     <button type="button" class="mb-xs mt-xs mr-xs btn btn-danger" id="cancel">Cancelar <i class="fa fa-times-circle"></i></button>
                 </div>
                 
@@ -217,22 +216,22 @@ $('#accept, #acceptCard').click(function(){
     let user_id = $('#user_id').val();
     let client_id = $('#client_id').val();
     let referencestype = $('#referencestype_id').val();
-    let pay_id = '';
+    let pay_id = 0;
     let data, url;
     let paymentMethod = $(this).attr('data-type');
 
-    if(paymentMethod == 'referencia'){
-        
-        if(channel == 0){
-            Swal.fire({
-                icon: 'error',
-                title: 'Método de pago no elegido.',
-                text: 'Por favor elige un método de pago.',
-                showConfirmButton: false,
-                timer: 2000
-            });
-            return false;
-        }
+    if(channel == 0){
+        Swal.fire({
+            icon: 'error',
+            title: 'Método de pago no elegido.',
+            text: 'Por favor elige un método de pago.',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        return false;
+    }
+
+    if(channel == 1 || channel == 2){
 
         data = {
             token:token, number_id: number_id, name: name, lastname: lastname, email: email,
@@ -243,16 +242,17 @@ $('#accept, #acceptCard').click(function(){
         url = "{{url('/generateReferenceAPI')}}";
 
         
-    }else if(paymentMethod == 'tarjeta'){
+    }else if(channel == 3){
         data = {
             _token:tokenCSRF,
             name:name,lastname: lastname,
-            email:email, cellphone:cel_destiny_reference,
+            email:email, cel_destiny_reference:cel_destiny_reference,
             amount:amount,concepto:concepto,
-            referencestype:referencestype,
+            type:referencestype,
             offer_id: offer_id, rate_id:rate,
-            number_id:number_id, channel_id:3,
-            client_id:client_id, pay_id:pay_id
+            number_id:number_id, channel:3,
+            client_id:client_id, pay_id:pay_id,
+            user_id:client_id
         }
         url = "{{url('/send-card-payment')}}";
     }
@@ -260,7 +260,7 @@ $('#accept, #acceptCard').click(function(){
     console.log(data);
     // return false;
 
-    if(paymentMethod == 'referencia'){
+    if(channel == 1 || channel == 2){
         $.ajax({
             url: url,
             method: "POST",
@@ -313,7 +313,7 @@ $('#accept, #acceptCard').click(function(){
                 
             }
         });
-    }else if(paymentMethod == 'tarjeta'){
+    }else if(channel == 3){
         $.ajax({
             url: url,
             method: 'POST',

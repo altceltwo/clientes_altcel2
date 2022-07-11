@@ -64,4 +64,72 @@ class AltanController extends Controller
             return $response->json();
         }
     }
+
+    public function currentOperator(Request $request){
+        $msisdn = $request->get('msisdn');
+
+        $accessTokenResponse = AltanController::accessTokenRequestPost();
+
+        if($accessTokenResponse['status'] == 'approved'){
+            $accessToken = $accessTokenResponse['accessToken'];
+            
+            $url_production = 'https://altanredes-prod.apigee.net/cm/v1/subscribers/lookupForOperator';
+                    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.$accessToken
+            ])->get($url_production,[
+                'msisdn' => $msisdn
+            ]);
+
+            return $response->json();
+        }
+    }
+
+    public function importPortability($msisdnTransitory,$msisdnPorted,$imsi,$approvedDateABD,$dida,$dcr){
+        $accessTokenResponse = AltanController::accessTokenRequestPost();
+
+        if($accessTokenResponse['status'] == 'approved'){
+            $accessToken = $accessTokenResponse['accessToken'];
+            
+            $url_production = 'https://altanredes-prod.apigee.net/ac-sandbox/v1/msisdns/port-in-c';
+                    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.$accessToken
+            ])->post($url_production,[
+                'msisdnTransitory' => $msisdnTransitory,
+                'msisdnPorted' => $msisdnPorted,
+                'imsi' => $imsi,
+                'approvedDateABD' => $approvedDateABD,
+                'dida' => $dida,
+                'rida' => 319,
+                'dcr' => $dcr,
+                'rcr' => 175
+            ]);
+
+            return $response->json();
+        }
+    }
+
+    public function consultIMEI(Request $request){
+        $imei = $request->get('imei');
+
+        $accessTokenResponse = AltanController::accessTokenRequestPost();
+    
+        if(isset($accessTokenResponse['status'])){
+            if($accessTokenResponse['status'] == 'approved'){
+
+                $accessToken = $accessTokenResponse['accessToken'];
+                $url_production = 'https://altanredes-prod.apigee.net/ac/v1/imeis/'.$imei.'/status';
+                
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer '.$accessToken,
+                    'Content-Type' => 'application/json'
+                ])->get($url_production);
+
+                return $response;
+            }else{
+                return "no aprobado";
+            }
+        }
+    }
 }

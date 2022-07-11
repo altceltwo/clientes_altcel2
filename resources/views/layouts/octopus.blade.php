@@ -379,7 +379,20 @@
                                             <li>
                                                 <a href="{{route('clients.create')}}">Nuevo</a>
                                             </li>
-                                           
+                                            <li>
+                                                <a href="{{route('contracts')}}">Contratos</a>
+                                            </li>
+                                            <li class="nav-parent">
+                                                <a>Portabilidad</a>
+                                                <ul class="nav nav-children">
+                                                    <li>
+                                                        <a href="{{route('portabilities.create')}}">Nueva</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{route('portabilities.index')}}">Mis Portabilidades</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                     <li class="nav-parent">
@@ -389,7 +402,7 @@
                                         </a>
                                         <ul class="nav nav-children">
                                             <li>
-                                                <a href="{{route('petition.create')}}">Nueva</a>
+                                                <a href="{{route('petition.create')}}">Línea Nueva</a>
                                             </li>
                                             <li>
                                                 <a href="{{route('petition.index')}}">Pendientes</a>
@@ -420,6 +433,9 @@
                                             <li>
                                                 <a href="{{route('my-changes')}}">Cambios Producto</a>
                                             </li>
+                                            <li>
+                                                <a href="{{route('my-movements')}}">General</a>
+                                            </li>
                                         </ul>
                                     </li>
                                     
@@ -433,8 +449,85 @@
                                             <li>
                                                 <a href="{{route('clients.create')}}">Nuevo</a>
                                             </li>
+                                            <li>
+                                                <a href="{{route('recharge')}}">Todos</a>
+                                            </li>
                                         </ul>
                                     </li>
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                            <span>Solicitudes</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('petition.create')}}">Nueva</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.index')}}">Pendientes</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.completed')}}">Completadas</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-parent">
+                                            <a>Portabilidad</a>
+                                            <ul class="nav nav-children">
+                                                <li>
+                                                    <a href="{{route('portabilities.create')}}">Nueva</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{route('portabilities.index')}}">Mis Portabilidades</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                @elseif(Auth::user()->role_id == 2)
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                            <span>Clientes</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('clients.create')}}">Nuevo</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                            <span>Solicitudes</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('shipping.create')}}">Envío Nuevo</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.create')}}">Línea Nueva</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('shipping.index')}}">Envíos Pendientes</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.index')}}">Líneas Nuevas Pendientes</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('petition.completed')}}">Completadas</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-parent">
+                                            <a>Portabilidad</a>
+                                            <ul class="nav nav-children">
+                                                <li>
+                                                    <a href="{{route('portabilities.create')}}">Nueva</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{route('portabilities.index')}}">Mis Portabilidades</a>
+                                                </li>
+                                            </ul>
+                                        </li>
                                 @elseif(Auth::user()->role_id == 3)
                                     <li class="nav-active">
                                         <a href="{{route('myReferences')}}">
@@ -442,6 +535,61 @@
                                             <span>Mis Referencias</span>
                                         </a>
                                     </li>
+                                @elseif(Auth::user()->role_id == 8)
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                            <span>Clientes</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('clients.create')}}">Nuevo</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="{{route('recharge')}}">
+                                            <i class="fa fa-dollar" aria-hidden="true"></i>
+                                            Recargas</a>
+                                    </li>
+
+                                    <li class="nav-parent">
+                                        <a>
+                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                            <span>Mis Cobros</span>
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li>
+                                                <a href="{{route('my-recharges')}}">Excedentes</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('my-charges')}}">Mensuales</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{route('my-changes')}}">Cambios Producto</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-parent">
+										<a>
+											<i class="fa fa-align-left" aria-hidden="true"></i>
+											<span>Solicitudes</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="{{route('petition-activation')}}">Activación Nueva</a>
+											</li>
+                                            <li>
+												<a href="{{route('other-petition')}}">Peticiones de Otro Tipo</a>
+											</li>
+											<li>
+												<a href="{{route('indexDealer')}}">Pendientes <span class="pull-right label label-warning"> </span></a> 
+											</li>
+                                            <li>
+												<a href="{{route('petition.completedDealer')}}">Completadas <span class="pull-right label label-success"> </span></a>
+											</li>
+										</ul>
+									</li>
                                 @endif
                                 
                             </ul>

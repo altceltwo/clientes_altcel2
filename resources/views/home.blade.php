@@ -16,17 +16,15 @@
     </div>
 </header>
 <div class="search-control-wrapper">
-    <form action="pages-search-results.html">
-        <div class="form-group">
+        <div class="form-group mb-md">
             <label for="msisdnHome">Ingresa tu número de SIM</label>
             <div class="input-group">
-                <input type="text" class="form-control" maxlength="10" id="msisdnHome">
+                <input type="text" class="form-control" maxlength="10" id="msisdnHome" onkeypress="consultUF(event)">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" id="consultUF">Consultar</button>
                 </span>
             </div>
         </div>
-    </form>
 </div>
 
 @if(session('message'))
@@ -186,7 +184,6 @@
                     @if($ref == 'N/A')
                     <td>
                         <a href="{{url('/generateReference/'.$mypay->id.'/'.$mypay->number_product.'/'.Auth::user()->id)}}" class="btn btn-success btn-sm mt-sm"><i class="fa fa-money"></i></a>
-                        <a href="{{url('/card-payment/'.$mypay->id.'/'.$mypay->number_product.'/'.Auth::user()->id)}}" class="btn btn-success btn-sm mt-sm"><i class="fa fa-credit-card"></i></a>
                     </td>
                     @else
                     <td><button type="button" onclick="ref(this.id)" class="btn btn-warning btn-sm ref-generated" id="{{ $ref }}"><i class="fa fa-eye"></i></button>
@@ -217,7 +214,6 @@
                     @if($ref == 'N/A')
                     <td>
                         <a href="{{url('/generateReference/'.$my2pay->id.'/'.$my2pay->service_name.'/'.Auth::user()->id)}}" class="btn btn-success btn-sm mt-sm"><i class="fa fa-money"></i></a>
-                        <a href="{{url('/card-payment/'.$my2pay->id.'/'.$my2pay->service_name.'/'.Auth::user()->id)}}" class="btn btn-success btn-sm mt-sm"><i class="fa fa-credit-card"></i></a>
                     </td>
                     @else
                     <td><button onclick="ref(this.id)" class="btn btn-warning btn-sm ref-generated" id="{{ $ref }}"><i class="fa fa-eye"></i></button>
@@ -326,6 +322,9 @@
                             
                             $('#referenceOxxo').modal('show');
                             console.log('referencia OxxoPay');
+                        }else if(data.channel_id == 3){
+                            location.href = data.url_card_payment;
+                            // console.log(data.url_card_payment)
                         }
                         console.log(data.reference);
                     }
@@ -351,5 +350,21 @@
             }
         });
     });
+
+    function consultUF(e){
+        if (e.keyCode === 13 && !e.shiftKey) {
+            let msisdn = $('#msisdnHome').val();
+            let url = "{{ route('consultUF.get', ['msisdn' => 'temp']) }}";
+            url = url.replace('temp',msisdn);
+            Swal.fire({
+                title: 'Estamos extrayendo la información de tu SIM...',
+                html: 'Espera un poco, un poquito más...',
+                didOpen: () => {
+                    Swal.showLoading();
+                    location.href = url;
+                }
+            });
+        }
+    }
 </script>
 @endsection

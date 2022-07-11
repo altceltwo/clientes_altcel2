@@ -135,4 +135,223 @@ class ConektaPayment{
             return $err;
         }
     }
+
+    public function createPaymentLink($request){
+        $pack_id = $request['pack_id'];
+        if($pack_id == null){
+            $request['pack_id'] = 0;
+        }
+        try{
+            $conekta_checkout = \Conekta\Checkout::create([
+                'name' => $request['concepto'],
+                'type' => "PaymentLink",
+                'recurrent' => false,
+                'expires_at' => (new \DateTime())->add(new \DateInterval('P3D'))->getTimestamp(),
+                'allowed_payment_methods' => ["card"],
+                'needs_shipping_contact' => false,
+                'monthly_installments_enabled' => false,
+                'order_template' => [
+                    'line_items' => [[
+                    'name' => $request['concepto'],
+                    'unit_price' => $request['amount']*100,
+                    'quantity' => 1
+                    ]],
+                    'currency' => "MXN",
+                    'customer_info' => [
+                    'name' => $request['name'].' '.$request['lastname'],
+                    'email' => $request['email'],
+                    'phone' => $request['cel_destiny_reference']
+                    ],
+                    'metadata' => [
+                        'pay_id' => $request['pay_id'],
+                        'client_id' => $request['client_id'],
+                        'referencestype_id' => $request['type'],
+                        'offer_id' => $request['offer_id'],
+                        'number_id' => $request['number_id'],
+                        'rate_id' => $request['rate_id'],
+                        'user_id' => $request['user_id'],
+                        'pack_id' => $request['pack_id']
+                    ]
+                ]
+            ]);
+            return $conekta_checkout;
+
+        }catch(\Conekta\ParameterValidationError $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }catch(\Conekta\Handler $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }
+    }
+
+    public function createPaymentLinkAllMethods($request){
+        $pack_id = $request['pack_id'];
+        $channel_system = $request['channel_system'];
+        $method = $request['method'];
+        if($pack_id == null){
+            $request['pack_id'] = 0;
+        }
+
+        if($channel_system == null){
+            $request['channel_system'] = 0;
+        }
+
+        if($method == null){
+            $methods = ["card","cash","bank_transfer"];
+        }else{
+            $methods = [$method];
+        }
+        try{
+            $conekta_checkout = \Conekta\Checkout::create([
+                'name' => $request['concepto'],
+                'type' => "PaymentLink",
+                'recurrent' => false,
+                'expires_at' => (new \DateTime())->add(new \DateInterval('P5D'))->getTimestamp(),
+                'allowed_payment_methods' => $methods,
+                'needs_shipping_contact' => false,
+                'monthly_installments_enabled' => false,
+                'order_template' => [
+                    'line_items' => [[
+                    'name' => $request['concepto'],
+                    'unit_price' => $request['amount']*100,
+                    'quantity' => 1
+                    ]],
+                    'currency' => "MXN",
+                    'customer_info' => [
+                    'name' => $request['name'].' '.$request['lastname'],
+                    'email' => $request['email'],
+                    'phone' => $request['cel_destiny_reference']
+                    ],
+                    'metadata' => [
+                        'pay_id' => $request['pay_id'],
+                        'client_id' => $request['client_id'],
+                        'referencestype_id' => $request['type'],
+                        'offer_id' => $request['offer_id'],
+                        'number_id' => $request['number_id'],
+                        'rate_id' => $request['rate_id'],
+                        'user_id' => $request['user_id'],
+                        'pack_id' => $request['pack_id'],
+                        'channel_system' => $request['channel_system']
+                    ]
+                ]
+            ]);
+            return $conekta_checkout;
+
+        }catch(\Conekta\ParameterValidationError $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }catch(\Conekta\Handler $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }
+    }
+
+    public function createPaymentLinkOreda($request){
+        $pack_id = $request['pack_id'];
+        if($pack_id == null){
+            $request['pack_id'] = 0;
+        }
+        try{
+            $conekta_checkout = \Conekta\Checkout::create([
+                'name' => $request['concepto'],
+                'type' => "PaymentLink",
+                'recurrent' => false,
+                'expires_at' => (new \DateTime())->add(new \DateInterval('P5D'))->getTimestamp(),
+                'allowed_payment_methods' => ["card"],
+                'needs_shipping_contact' => false,
+                'monthly_installments_enabled' => false,
+                'order_template' => [
+                    'line_items' => [[
+                    'name' => $request['concepto'],
+                    'unit_price' => $request['amount']*100,
+                    'quantity' => 1
+                    ]],
+                    'currency' => "MXN",
+                    'customer_info' => [
+                    'name' => $request['name'].' '.$request['lastname'],
+                    'email' => $request['email'],
+                    'phone' => $request['cel_destiny_reference']
+                    ],
+                    'metadata' => [
+                        'pay_id' => $request['pay_id'],
+                        'client_id' => $request['client_id'],
+                        'referencestype_id' => $request['type'],
+                        'offer_id' => $request['offer_id'],
+                        'number_id' => $request['number_id'],
+                        'rate_id' => $request['rate_id'],
+                        'user_id' => $request['user_id'],
+                        'pack_id' => $request['pack_id']
+                    ]
+                ]
+            ]);
+            return $conekta_checkout;
+
+        }catch(\Conekta\ParameterValidationError $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }catch(\Conekta\Handler $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }
+    }
+
+    public function multiPaymentOreda($request){
+        $monthly_items = [];
+        $json = $request['monthly_items'];
+
+        foreach ($json as $monthly_item){
+            array_push($monthly_items,array(
+                'name' => $monthly_item['name'],
+                'unit_price' => $monthly_item['unit_price']*100,
+                'quantity' => $monthly_item['quantity']*1
+            ));
+        }
+        try{
+            $conekta_checkout = \Conekta\Checkout::create([
+                'name' => $request['concepto'],
+                'type' => "PaymentLink",
+                'recurrent' => false,
+                'expires_at' => (new \DateTime())->add(new \DateInterval('P5D'))->getTimestamp(),
+                'allowed_payment_methods' => ["cash","card"],
+                'needs_shipping_contact' => false,
+                'monthly_installments_enabled' => false,
+                'order_template' => [
+                    'line_items' => $monthly_items,
+                    'currency' => "MXN",
+                    'customer_info' => [
+                    'name' => $request['name'],
+                    'email' => $request['email'],
+                    'phone' => $request['phone']
+                    ],
+                    'metadata' => [
+                        'pay_id' => $request['pay_id'],
+                        'client_id' => $request['client_id'],
+                        'referencestype_id' => $request['type'],
+                        'offer_id' => $request['offer_id'],
+                        'number_id' => $request['number_id'],
+                        'rate_id' => $request['rate_id'],
+                        'user_id' => $request['user_id'],
+                        'pack_id' => $request['pack_id']
+                    ]
+                ]
+            ]);
+            return $conekta_checkout;
+
+        }catch(\Conekta\ParameterValidationError $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }catch(\Conekta\Handler $error){
+            $err['code'] = $error->getCode();
+            $err['message'] = $error->getMessage();
+            return $err;
+        }
+    }
 }

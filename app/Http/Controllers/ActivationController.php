@@ -133,15 +133,23 @@ class ActivationController extends Controller
 
     public function saveIMG(Request $request){
         $base64 = $request->post('base64');
+        // return $request;
+        
         $client = $request->post('client');
         $x = explode(',',$base64);
-        $data = base64_decode($x[1]);
-        $filepath = '../public/storage/uploads/signature'.$client.'.png';
-        if(file_put_contents($filepath,$data)){
+        $length = sizeof($x);
+        if($length == 1) {
             return 1;
-        }else{
-            return 0;
+        }else if($length == 2){
+            $data = base64_decode($x[1]);
+            $filepath = '../public/storage/uploads/signature'.$client.'.png';
+            if(file_put_contents($filepath,$data)){
+                return 1;
+            }else{
+                return 0;
+            }
         }
+        
     }
    
 }

@@ -70,7 +70,7 @@ use \Carbon\Carbon;
                     @endphp
 
                     
-                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 4)
+                    @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 4 || Auth::user()->role_id == 8)
                         <button type="button" class="btn btn-success btn-sm mt-xs register-pay-manual" payID="{{$paymentsPending->id}}" service="{{$paymentsPending->number_product}}"><i class="fa  fa-dollar"></i></button>
                         <button type="button" class="btn btn-warning btn-sm mt-xs payment-with-change" payID="{{$paymentsPending->id}}" service="{{$paymentsPending->number_product}}" DN="{{$paymentsPending->DN}}"><i class="fa  fa-exchange"></i></button>
                     @endif

@@ -22,7 +22,7 @@
 @endif
 <!-- Final Dashboard -->
 
-@if(Auth::user()->role_id == 4)
+@if(Auth::user()->role_id == 4 || Auth::user()->role_id == 8)
     <section class="panel">
         <header class="panel-heading">
             <div class="panel-actions">

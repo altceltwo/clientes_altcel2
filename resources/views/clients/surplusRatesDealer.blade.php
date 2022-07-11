@@ -215,6 +215,36 @@
                             method: "POST",
                             data: {token:tokenJWT, _token:tokenCSRF, msisdn:msisdn, offerID:offerID, rate_id:rate_id, offer_id:offer_id, user_id:user_id, price:price, comment:comment, reason:reason, status:status},
                             success: function(response){
+                                if(response.status){
+                                    if(response.status == 'Token is Invalid'){
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Token de acceso inválido.',
+                                            text: 'Se recargará la página...',
+                                            showConfirmButton: false,
+                                        });
+                                        setTimeout(function(){ location.reload(); }, 2000);
+                                    }else if(response.status == 'Token is Expired'){
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Token de acceso expirado.',
+                                            text: 'Se recargará la página...',
+                                            showConfirmButton: false,
+                                        });
+                                        setTimeout(function(){ location.reload(); }, 2000);
+                                    }else if(response.status == 'Authorization Token not found'){
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Token de acceso no encontrado.',
+                                            text: 'Se recargará la página...',
+                                            showConfirmButton: false,
+                                        });
+                                        setTimeout(function(){ location.reload(); }, 2000);
+                                    }
+                                    
+                                    return false;
+                                }
+                                
                                 response = JSON.parse(response);
                                 if(response.http_code == 1){
                                     token = token+'xxXXxx';

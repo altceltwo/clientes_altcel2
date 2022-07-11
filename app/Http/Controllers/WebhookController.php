@@ -16,7 +16,12 @@ use App\Offer;
 use App\Instalation;
 use App\Activation;
 use App\Number;
+use App\Shipping;
+use App\User;
+use App\Client;
 use Illuminate\Http\Request;
+use App\Mail\NotifyShipping;
+use Illuminate\Support\Facades\Mail;
 
 class WebhookController extends Controller
 {
@@ -251,6 +256,10 @@ class WebhookController extends Controller
         $status = $request['status'];
         $authorization = $request['authorization'];
 
+        $validate = Reference::where('reference_id',$reference_id)->exists();
+        if(!$validate){
+            return response()->json(['http_code'=>'404']);
+        }
         $x = Reference::where('reference_id',$reference_id)->first();
             $referencestype_id = $x->referencestype_id;
             $amount_reference = $x->amount;
@@ -275,6 +284,18 @@ class WebhookController extends Controller
                     'amount_received' => $monto_recibido
                 ]);
                 
+            }else if($referencestype_id == 6){
+                $pays_id = explode(",", $request['pay_id']);
+                $amounts = explode(",", $request['amounts']);
+
+                for ($i=0; $i < sizeof($pays_id); $i++) { 
+                    Ethernetpay::where('id',$pays_id[$i])->where('reference_id',$reference_id)->update([
+                        'status' => 'completado',
+                        'type_pay' => 'referencia',
+                        'amount_received' => $amounts[$i]/100
+                    ]);
+                }
+
             }else if($referencestype_id == 1){
                 // Obtención de datos almacenados en la referencia de pago
                 $number_id = $x->number_id;
@@ -333,7 +354,7 @@ class WebhookController extends Controller
 
                             $response = Http::withHeaders([
                                 'Content-Type' => 'application/json'
-                            ])->post('http://crm.altcel/change-product',[
+                            ])->post('http://10.44.0.70/change-product',[
                                 'msisdn' => $msisdn,
                                 'offerID' => $offerID,
                                 'offer_id' => $offer_idFromPayment,
@@ -348,7 +369,7 @@ class WebhookController extends Controller
                                 'reference_id' => null
 
                             ]);
-                            return $response;
+                            // return $response;
                         }else{
                             $statusAltan = WebhookController::consultUFRuntime($msisdn,$producto);
                             if($statusAltan == 1){
@@ -358,7 +379,7 @@ class WebhookController extends Controller
 
                                 $response = Http::withHeaders([
                                     'Content-Type' => 'application/json'
-                                ])->post('http://crm.altcel/change-product',[
+                                ])->post('http://10.44.0.70/change-product',[
                                     'msisdn' => $msisdn,
                                     'offerID' => $offerID,
                                     'offer_id' => $offer_idFromPayment,
@@ -372,7 +393,7 @@ class WebhookController extends Controller
                                     'pay_id' => $pay_id,
                                     'reference_id' => null
                                 ]);
-                                return $response;
+                                // return $response;
                             }else{
                                 return response()->json(['message'=>'Hubo un error, no se hará cambio alguno','http_code'=>0]);
                             }
@@ -423,7 +444,7 @@ class WebhookController extends Controller
 
                     $response = Http::withHeaders([
                         'Content-Type' => 'application/json'
-                    ])->post('http://crm.altcel/change-product',[
+                    ])->post('http://10.44.0.70/change-product',[
                         'msisdn' => $msisdn,
                         'offerID' => $offerID,
                         'offer_id' => $offer_id,
@@ -451,17 +472,50 @@ class WebhookController extends Controller
                 $offer_data = Offer::where('id',$x->offer_id)->first();
                 $producto = $number_data->producto;
                 $MSISDN = $number_data->MSISDN;
-                $offerID = $offer_data->offerID;
                 
-                $data = array('msisdn'=>$MSISDN,'offer'=>$offerID);
-
                 $producto = trim($producto);
                 
                 if($producto == 'MIFI' || $producto == 'HBB'){
-                    $purchaseProduct = app('App\Http\Controllers\AltanController')->productPurchase($data);
+                    $offerID = $offer_data->offerID;
+                }else if($producto == 'MOV'){
+                    $offerID = $offer_data->offerID_second;
                 }
+
+                $data = array('msisdn'=>$MSISDN,'offer'=>$offerID);
+
+                $purchaseProduct = app('App\Http\Controllers\AltanController')->productPurchase($data);
                 
                 // return $purchaseProduct;
+            }else if($referencestype_id == 7){
+                $shipping_id = $request['pay_id'];
+                $shippingData = Shipping::where('id',$shipping_id)->first();
+                $to_id = $shippingData->to_id;
+                $sold_by = $shippingData->sold_by;
+
+                $clientData = User::where('id',$to_id)->first();
+                $clientData = $clientData->name.' '.$clientData->lastname;
+                $userData = User::where('id',$sold_by)->first();
+                $userData = $userData->name.' '.$userData->lastname;
+                $clientDataPhone = Client::where('user_id',$to_id)->first();
+                $phone = $clientDataPhone->cellphone;
+
+                $data = [
+                    "clientData" => $clientData,
+                    "userData" => $userData,
+                    "phone" => $phone,
+                    "shippingID" => $shipping_id,
+                ];
+
+                // $data = [
+                //     "clientData" => 'CHARLES PRUEBA',
+                //     "userData" => 'DESARROLLO PRUEBA',
+                //     "phone" => '9612538386',
+                //     "shippingID" => 6,
+                // ];
+                DB::table('shippings')->where('id',$shipping_id)->update(['status'=>'pendiente','reference_id'=>$reference_id]);
+                Mail::to('keila_vazquez@altcel.com')->send(new NotifyShipping($data));
+                Mail::to('jalexis_santana@altcel.com')->send(new NotifyShipping($data));
+                Mail::to('charlesrootsman97@gmail.com')->send(new NotifyShipping($data));
             }
 
             Reference::where('reference_id',$reference_id)->update([
@@ -484,7 +538,7 @@ class WebhookController extends Controller
         if($status == "Suspend (B2W)"){
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
-            ])->post('http://crm.altcel/activate-deactivate/DN-api',[
+            ])->post('http://10.44.0.70/activate-deactivate/DN-api',[
                 'msisdn' => $msisdn,
                 'type' => 'out_in',
                 'status' => 'inactivo'
@@ -583,6 +637,62 @@ class WebhookController extends Controller
             return 1;
         }else{
             return 0;
+        }
+    }
+
+    public function orderCreate(Request $request){
+        // return $request;
+        $client_id = $request['client_id'];
+        $dataUser = User::find($client_id);
+        $pack_id = $request['pack_id'];
+        $offer_id = $request['offer_id'];
+        $number_id = $request['number_id'];
+        $rate_id = $request['rate_id'];
+        $channel_system = $request['channel_system'];
+
+        $request['pack_id'] = $pack_id == 0 ? null : $pack_id;
+        $request['offer_id'] = $offer_id == 0 ? null : $offer_id;
+        $request['number_id'] = $number_id == 0 ? null : $number_id;
+        $request['rate_id'] = $rate_id == 0 ? null : $rate_id;
+        $request['channel_system'] = $channel_system == 0 ? null : $channel_system;
+
+        $x = Reference::insert([
+            'reference_id' => $request['reference_id'],
+            'reference' => $request['reference'],
+            'description' => $request['description'],
+            'amount' => $request['amount']/100,
+            'currency' => $request['currency'],
+            'client_id' => $request['client_id'],
+            'offer_id' => $request['offer_id'],
+            'rate_id' => $request['rate_id'],
+            'pack_id' => $request['pack_id'],
+            'user_id' => $request['user_id'],
+            'number_id' => $request['number_id'],
+            'email' => $request['email'],
+            'name' => $dataUser->name,
+            'lastname' => $dataUser->lastname,
+            'creation_date' => date('Y-m-d H:i:s'),
+            'payment_method' => 'card',
+            'transaction_type' => 'charge',
+            'referencestype_id' => $request['referencestype_id'],
+            'status' => 'pending_payment',
+            'channel_id' => 3,
+            'channel_system' => $channel_system
+        ]);
+
+        if($request['referencestype_id'] == 1){
+            Pay::where('id',$request['pay_id'])->update(['reference_id'=>$request['reference_id']]);
+        }else if($request['referencestype_id'] == 2){
+            Ethernetpay::where('id',$request['pay_id'])->update(['reference_id'=>$request['reference_id']]);
+        }else if($request['referencestype_id'] == 6){
+            $pays_id = explode(",", $request['pay_id']);
+            for ($i=0; $i < sizeof($pays_id); $i++) { 
+                Ethernetpay::where('id',$pays_id[$i])->update(['reference_id'=>$request['reference_id']]);
+            }
+        }
+        
+        if($x){
+            return response()->json(['message'=>'ÉXITO'],200);
         }
     }
 }

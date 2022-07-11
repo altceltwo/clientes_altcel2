@@ -915,25 +915,25 @@
 
     $('#contract').click(function(){
 
-        if($('#number').val() == 0){
-            messageError('Por favor elige una SIM.');
-            return false;
-        }
+        // if($('#number').val() == 0){
+        //     messageError('Por favor elige una SIM.');
+        //     return false;
+        // }
 
-        if($('#device').val() == 0){
-            messageError('Por favor elige un dispositivo.');
-            return false;
-        }
+        // if($('#device').val() == 0){
+        //     messageError('Por favor elige un dispositivo.');
+        //     return false;
+        // }
 
-        if($('#offers').val() == 0){
-            messageError('Por favor elige un plan.');
-            return false;
-        }
+        // if($('#offers').val() == 0){
+        //     messageError('Por favor elige un plan.');
+        //     return false;
+        // }
 
-        if($('#client').val() == 0){
-            messageError('Por favor seleccione un cliente.');
-            return false;
-        }
+        // if($('#client').val() == 0){
+        //     messageError('Por favor seleccione un cliente.');
+        //     return false;
+        // }
 
         let name = $('#client option:selected').attr('data-name');
         let lastname = $('#client option:selected').attr('data-lastname');
